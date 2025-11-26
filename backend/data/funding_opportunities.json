@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "name": "Small Business Innovation Grant",
+    "type": "Grant",
+    "sector": ["Technology", "Healthcare", "Manufacturing"],
+    "min_amount": 10000,
+    "max_amount": 100000,
+    "location": ["Eastern Cape", "Buffalo City", "Nelson Mandela Bay"],
+    "min_years": 1,
+    "max_years": 10,
+    "description": "Supporting innovative small businesses with growth potential",
+    "eligibility": "Must have innovative product/service, revenue under R5M"
+  },
+  {
+    "id": 2,
+    "name": "Women Entrepreneur Fund",
+    "type": "Loan",
+    "sector": ["Retail", "Services", "Agriculture"],
+    "min_amount": 5000,
+    "max_amount": 50000,
+    "location": ["Eastern Cape"],
+    "min_years": 0,
+    "max_years": 5,
+    "description": "Empowering women-owned businesses",
+    "eligibility": "51% women ownership, registered business"
+  },
+  {
+    "id": 3,
+    "name": "Tech Startup Accelerator",
+    "type": "Equity",
+    "sector": ["Technology", "Fintech"],
+    "min_amount": 50000,
+    "max_amount": 500000,
+    "location": ["Eastern Cape", "Buffalo City"],
+    "min_years": 0,
+    "max_years": 3,
+    "description": "Accelerator program for tech startups",
+    "eligibility": "Tech-based business model, scalable solution"
+  },
+  {
+    "id": 4,
+    "name": "Agricultural Development Fund",
+    "type": "Grant",
+    "sector": ["Agriculture", "Food Processing"],
+    "min_amount": 20000,
+    "max_amount": 200000,
+    "location": ["Eastern Cape", "OR Tambo District", "Chris Hani District"],
+    "min_years": 1,
+    "max_years": 15,
+    "description": "Supporting sustainable agriculture practices",
+    "eligibility": "Agricultural focus, sustainable practices"
+  },
+  {
+    "id": 5,
+    "name": "Youth Enterprise Scheme",
+    "type": "Loan",
+    "sector": ["Any"],
+    "min_amount": 2000,
+    "max_amount": 25000,
+    "location": ["Eastern Cape"],
+    "min_years": 0,
+    "max_years": 2,
+    "description": "Supporting young entrepreneurs under 35",
+    "eligibility": "Owner under 35 years, Eastern Cape resident"
+  },
+  {
+    "id": 6,
+    "name": "Green Energy Initiative",
+    "type": "Grant",
+    "sector": ["Energy", "Technology"],
+    "min_amount": 100000,
+    "max_amount": 1000000,
+    "location": ["Eastern Cape", "Amathole District", "Buffalo City"],
+    "min_years": 2,
+    "max_years": 20,
+    "description": "Funding renewable energy projects",
+    "eligibility": "Renewable energy focus, environmental impact"
+  }
+]

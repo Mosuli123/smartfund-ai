@@ -1,0 +1,565 @@
+/* ELIDZ Official Theme - Color Palette & Design System */
+
+:root {
+  /* Primary Colors - Navy Blue/Dark Teal */
+  --elidz-primary: #1e3a5f;
+  --elidz-primary-dark: #152d47;
+  --elidz-primary-light: #2d4a6b;
+  --elidz-primary-50: #f0f4f8;
+  --elidz-primary-100: #d9e6f2;
+  --elidz-primary-200: #b3cce5;
+  --elidz-primary-300: #8db3d8;
+  --elidz-primary-400: #6799cb;
+  --elidz-primary-500: #4180be;
+  --elidz-primary-600: #2d4a6b;
+  --elidz-primary-700: #1e3a5f;
+  --elidz-primary-800: #152d47;
+  --elidz-primary-900: #0c1f2f;
+
+  /* Accent Colors - Warm Orange */
+  --elidz-accent: #e67e22;
+  --elidz-accent-dark: #d35400;
+  --elidz-accent-light: #f39c12;
+  --elidz-accent-50: #fef7f0;
+  --elidz-accent-100: #fdeee0;
+  --elidz-accent-200: #fbdcc1;
+  --elidz-accent-300: #f9cba2;
+  --elidz-accent-400: #f7b983;
+  --elidz-accent-500: #f5a864;
+  --elidz-accent-600: #e67e22;
+  --elidz-accent-700: #d35400;
+  --elidz-accent-800: #b8470f;
+  --elidz-accent-900: #9c3a0c;
+
+  /* Supporting Colors */
+  --elidz-success: #27ae60;
+  --elidz-success-light: #2ecc71;
+  --elidz-warning: #f39c12;
+  --elidz-error: #e74c3c;
+  --elidz-info: #3498db;
+
+  /* Neutral Colors */
+  --elidz-gray-50: #f8fafc;
+  --elidz-gray-100: #f1f5f9;
+  --elidz-gray-200: #e2e8f0;
+  --elidz-gray-300: #cbd5e1;
+  --elidz-gray-400: #94a3b8;
+  --elidz-gray-500: #64748b;
+  --elidz-gray-600: #475569;
+  --elidz-gray-700: #334155;
+  --elidz-gray-800: #1e293b;
+  --elidz-gray-900: #0f172a;
+
+  /* Typography */
+  --elidz-font-family: 'Inter', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  --elidz-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Spacing */
+  --elidz-spacing-xs: 0.25rem;
+  --elidz-spacing-sm: 0.5rem;
+  --elidz-spacing-md: 1rem;
+  --elidz-spacing-lg: 1.5rem;
+  --elidz-spacing-xl: 2rem;
+  --elidz-spacing-2xl: 3rem;
+  --elidz-spacing-3xl: 4rem;
+
+  /* Border Radius */
+  --elidz-radius-sm: 0.375rem;
+  --elidz-radius-md: 0.5rem;
+  --elidz-radius-lg: 0.75rem;
+  --elidz-radius-xl: 1rem;
+  --elidz-radius-2xl: 1.5rem;
+
+  /* Shadows */
+  --elidz-shadow-sm: 0 1px 2px 0 rgba(30, 58, 95, 0.05);
+  --elidz-shadow-md: 0 4px 6px -1px rgba(30, 58, 95, 0.1), 0 2px 4px -1px rgba(30, 58, 95, 0.06);
+  --elidz-shadow-lg: 0 10px 15px -3px rgba(30, 58, 95, 0.1), 0 4px 6px -2px rgba(30, 58, 95, 0.05);
+  --elidz-shadow-xl: 0 20px 25px -5px rgba(30, 58, 95, 0.1), 0 10px 10px -5px rgba(30, 58, 95, 0.04);
+  --elidz-shadow-2xl: 0 25px 50px -12px rgba(30, 58, 95, 0.25);
+
+  /* Transitions */
+  --elidz-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --elidz-transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --elidz-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Typography */
+body {
+  font-family: var(--elidz-font-family);
+  color: var(--elidz-gray-800);
+  line-height: 1.6;
+}
+
+/* ELIDZ Component Classes */
+
+/* Navigation */
+.elidz-nav {
+  background: linear-gradient(135deg, var(--elidz-primary) 0%, var(--elidz-primary-dark) 100%);
+  box-shadow: var(--elidz-shadow-lg);
+  border-bottom: 3px solid var(--elidz-accent);
+}
+
+.elidz-nav-link {
+  color: white;
+  padding: var(--elidz-spacing-sm) var(--elidz-spacing-md);
+  border-radius: var(--elidz-radius-md);
+  transition: all var(--elidz-transition-fast);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.elidz-nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.elidz-nav-link.active {
+  background: var(--elidz-accent);
+  box-shadow: var(--elidz-shadow-md);
+}
+
+.elidz-nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--elidz-accent);
+  transition: width var(--elidz-transition-fast);
+}
+
+.elidz-nav-link:hover::before {
+  width: 100%;
+}
+
+/* Buttons */
+.elidz-btn {
+  font-family: var(--elidz-font-family);
+  font-weight: 600;
+  padding: var(--elidz-spacing-sm) var(--elidz-spacing-lg);
+  border-radius: var(--elidz-radius-lg);
+  transition: all var(--elidz-transition-fast);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--elidz-spacing-xs);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.elidz-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--elidz-transition-normal);
+}
+
+.elidz-btn:hover::before {
+  left: 100%;
+}
+
+.elidz-btn-primary {
+  background: linear-gradient(135deg, var(--elidz-primary) 0%, var(--elidz-primary-light) 100%);
+  color: white;
+  box-shadow: var(--elidz-shadow-md);
+}
+
+.elidz-btn-primary:hover {
+  background: linear-gradient(135deg, var(--elidz-primary-dark) 0%, var(--elidz-primary) 100%);
+  box-shadow: var(--elidz-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.elidz-btn-accent {
+  background: linear-gradient(135deg, var(--elidz-accent) 0%, var(--elidz-accent-light) 100%);
+  color: white;
+  box-shadow: var(--elidz-shadow-md);
+}
+
+.elidz-btn-accent:hover {
+  background: linear-gradient(135deg, var(--elidz-accent-dark) 0%, var(--elidz-accent) 100%);
+  box-shadow: var(--elidz-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.elidz-btn-outline {
+  background: transparent;
+  color: var(--elidz-primary);
+  border: 2px solid var(--elidz-primary);
+}
+
+.elidz-btn-outline:hover {
+  background: var(--elidz-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.elidz-btn-ghost {
+  background: transparent;
+  color: var(--elidz-gray-600);
+  border: 1px solid var(--elidz-gray-300);
+}
+
+.elidz-btn-ghost:hover {
+  background: var(--elidz-gray-50);
+  border-color: var(--elidz-gray-400);
+}
+
+/* Form Elements */
+.elidz-input {
+  width: 100%;
+  padding: var(--elidz-spacing-sm) var(--elidz-spacing-md);
+  border: 2px solid var(--elidz-gray-300);
+  border-radius: var(--elidz-radius-lg);
+  font-family: var(--elidz-font-family);
+  font-size: 1rem;
+  transition: all var(--elidz-transition-fast);
+  background: white;
+}
+
+.elidz-input:focus {
+  outline: none;
+  border-color: var(--elidz-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+  transform: translateY(-1px);
+}
+
+.elidz-input:hover {
+  border-color: var(--elidz-gray-400);
+}
+
+.elidz-label {
+  display: block;
+  font-weight: 600;
+  color: var(--elidz-gray-700);
+  margin-bottom: var(--elidz-spacing-xs);
+  font-size: 0.875rem;
+}
+
+.elidz-select {
+  width: 100%;
+  padding: var(--elidz-spacing-sm) var(--elidz-spacing-md);
+  border: 2px solid var(--elidz-gray-300);
+  border-radius: var(--elidz-radius-lg);
+  font-family: var(--elidz-font-family);
+  font-size: 1rem;
+  transition: all var(--elidz-transition-fast);
+  background: white;
+  cursor: pointer;
+}
+
+.elidz-select:focus {
+  outline: none;
+  border-color: var(--elidz-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+}
+
+/* Cards */
+.elidz-card {
+  background: white;
+  border-radius: var(--elidz-radius-xl);
+  box-shadow: var(--elidz-shadow-md);
+  border: 1px solid var(--elidz-gray-200);
+  transition: all var(--elidz-transition-normal);
+  overflow: hidden;
+}
+
+.elidz-card:hover {
+  box-shadow: var(--elidz-shadow-xl);
+  transform: translateY(-4px);
+  border-color: var(--elidz-primary-200);
+}
+
+.elidz-card-header {
+  padding: var(--elidz-spacing-lg);
+  border-bottom: 1px solid var(--elidz-gray-200);
+  background: linear-gradient(135deg, var(--elidz-gray-50) 0%, white 100%);
+}
+
+.elidz-card-body {
+  padding: var(--elidz-spacing-lg);
+}
+
+.elidz-card-footer {
+  padding: var(--elidz-spacing-lg);
+  border-top: 1px solid var(--elidz-gray-200);
+  background: var(--elidz-gray-50);
+}
+
+/* Status Badges */
+.elidz-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--elidz-spacing-xs) var(--elidz-spacing-sm);
+  border-radius: var(--elidz-radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.elidz-badge-success {
+  background: var(--elidz-success);
+  color: white;
+}
+
+.elidz-badge-warning {
+  background: var(--elidz-warning);
+  color: white;
+}
+
+.elidz-badge-error {
+  background: var(--elidz-error);
+  color: white;
+}
+
+.elidz-badge-info {
+  background: var(--elidz-info);
+  color: white;
+}
+
+.elidz-badge-primary {
+  background: var(--elidz-primary);
+  color: white;
+}
+
+.elidz-badge-accent {
+  background: var(--elidz-accent);
+  color: white;
+}
+
+/* Alerts */
+.elidz-alert {
+  padding: var(--elidz-spacing-md);
+  border-radius: var(--elidz-radius-lg);
+  border-left: 4px solid;
+  margin-bottom: var(--elidz-spacing-md);
+}
+
+.elidz-alert-success {
+  background: rgba(39, 174, 96, 0.1);
+  border-color: var(--elidz-success);
+  color: var(--elidz-success);
+}
+
+.elidz-alert-warning {
+  background: rgba(243, 156, 18, 0.1);
+  border-color: var(--elidz-warning);
+  color: var(--elidz-warning);
+}
+
+.elidz-alert-error {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: var(--elidz-error);
+  color: var(--elidz-error);
+}
+
+.elidz-alert-info {
+  background: rgba(52, 152, 219, 0.1);
+  border-color: var(--elidz-info);
+  color: var(--elidz-info);
+}
+
+/* Loading States */
+.elidz-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--elidz-gray-300);
+  border-radius: 50%;
+  border-top-color: var(--elidz-accent);
+  animation: elidz-spin 1s ease-in-out infinite;
+}
+
+@keyframes elidz-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tables */
+.elidz-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: var(--elidz-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--elidz-shadow-md);
+}
+
+.elidz-table th {
+  background: linear-gradient(135deg, var(--elidz-primary) 0%, var(--elidz-primary-light) 100%);
+  color: white;
+  padding: var(--elidz-spacing-md);
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.elidz-table td {
+  padding: var(--elidz-spacing-md);
+  border-bottom: 1px solid var(--elidz-gray-200);
+  transition: background-color var(--elidz-transition-fast);
+}
+
+.elidz-table tbody tr:hover td {
+  background: var(--elidz-gray-50);
+}
+
+/* Modals */
+.elidz-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--elidz-spacing-md);
+}
+
+.elidz-modal {
+  background: white;
+  border-radius: var(--elidz-radius-2xl);
+  box-shadow: var(--elidz-shadow-2xl);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.95);
+  transition: transform var(--elidz-transition-normal);
+}
+
+.elidz-modal.open {
+  transform: scale(1);
+}
+
+.elidz-modal-header {
+  padding: var(--elidz-spacing-lg);
+  border-bottom: 1px solid var(--elidz-gray-200);
+  background: linear-gradient(135deg, var(--elidz-gray-50) 0%, white 100%);
+}
+
+.elidz-modal-body {
+  padding: var(--elidz-spacing-lg);
+}
+
+.elidz-modal-footer {
+  padding: var(--elidz-spacing-lg);
+  border-top: 1px solid var(--elidz-gray-200);
+  background: var(--elidz-gray-50);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--elidz-spacing-sm);
+}
+
+/* Utility Classes */
+.elidz-text-primary { color: var(--elidz-primary); }
+.elidz-text-accent { color: var(--elidz-accent); }
+.elidz-text-success { color: var(--elidz-success); }
+.elidz-text-warning { color: var(--elidz-warning); }
+.elidz-text-error { color: var(--elidz-error); }
+.elidz-text-info { color: var(--elidz-info); }
+
+.elidz-bg-primary { background-color: var(--elidz-primary); }
+.elidz-bg-accent { background-color: var(--elidz-accent); }
+.elidz-bg-success { background-color: var(--elidz-success); }
+.elidz-bg-warning { background-color: var(--elidz-warning); }
+.elidz-bg-error { background-color: var(--elidz-error); }
+.elidz-bg-info { background-color: var(--elidz-info); }
+
+.elidz-gradient-primary {
+  background: linear-gradient(135deg, var(--elidz-primary) 0%, var(--elidz-primary-light) 100%);
+}
+
+.elidz-gradient-accent {
+  background: linear-gradient(135deg, var(--elidz-accent) 0%, var(--elidz-accent-light) 100%);
+}
+
+.elidz-gradient-hero {
+  background: linear-gradient(135deg, var(--elidz-primary) 0%, var(--elidz-accent) 100%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .elidz-btn {
+    padding: var(--elidz-spacing-xs) var(--elidz-spacing-md);
+    font-size: 0.875rem;
+  }
+  
+  .elidz-card {
+    margin: var(--elidz-spacing-sm);
+  }
+  
+  .elidz-modal {
+    margin: var(--elidz-spacing-sm);
+    max-width: calc(100% - 2rem);
+  }
+}
+
+/* Animations */
+@keyframes elidz-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes elidz-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.elidz-animate-fade-in {
+  animation: elidz-fade-in 0.6s ease-out;
+}
+
+.elidz-animate-slide-in {
+  animation: elidz-slide-in 0.6s ease-out;
+}
+
+/* Focus States for Accessibility */
+.elidz-btn:focus,
+.elidz-input:focus,
+.elidz-select:focus {
+  outline: 2px solid var(--elidz-accent);
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .elidz-nav,
+  .elidz-modal-overlay {
+    display: none !important;
+  }
+  
+  .elidz-card {
+    box-shadow: none;
+    border: 1px solid var(--elidz-gray-300);
+  }
+}
