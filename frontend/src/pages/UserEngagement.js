@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ModernIcons from '../components/ModernIcons';
+import { ModernIcons } from '../components/ModernIcons';
 
 const UserEngagement = ({ user }) => {
   const [activeTab, setActiveTab] = useState('dashboard');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ModernIcons from './ModernIcons';
+import { ModernIcons } from './ModernIcons';
 
 const GamificationWidget = ({ user, compact = false }) => {
   const [userStats, setUserStats] = useState(null);
@@ -226,7 +226,7 @@ const GamificationWidget = ({ user, compact = false }) => {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <ModernIcons.Flame className="w-5 h-5" color="#e67e22" />
             <div className="text-center">
               <div className="text-lg font-bold" style={{color: '#e67e22'}}>

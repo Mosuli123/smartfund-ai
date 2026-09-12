@@ -20,10 +20,10 @@ const FundingAdminManagement = () => {
     const mockAdmins = [
       {
         id: 1,
-        username: 'elidz_funding',
+        username: 'sita_funding',
         fullName: 'Dr. Thabo Mthembu',
-        organization: 'ELIDZ Funding Division',
-        email: 'thabo.mthembu@elidz.co.za',
+        organization: 'SITA GovTech Funding Division',
+        email: 'thabo.mthembu@sita.co.za',
         focusAreas: ['Manufacturing', 'Automotive'],
         status: 'Active',
         lastLogin: '2024-01-20',

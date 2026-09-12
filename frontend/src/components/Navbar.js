@@ -1,89 +1,79 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Logo from './Logo';
+
+const NAV_LINKS = [
+  { to: '/',                      label: 'Dashboard' },
+  { to: '/profile',               label: 'Business Profile' },
+  { to: '/funding-opportunities', label: 'Find Funding' },
+  { to: '/applications',          label: 'Applications' },
+  { to: '/documents',             label: 'Documents' },
+  { to: '/notifications',         label: 'Notifications' },
+];
 
 const Navbar = ({ user, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isActive = path => location.pathname === path;
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const businessName = user?.companyData?.companyName || user?.username || 'User';
 
   return (
-    <nav className="bg-white shadow-lg border-b">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center">
-              <Logo className="h-16" />
-            </Link>
-            <div className="hidden md:flex space-x-4">
-              <Link 
-                to="/" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/') ? 'bg-gray-100' : ''}`}
-              >
-                Home
-              </Link>
-              <Link 
-                to="/profile" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/profile') ? 'bg-gray-100' : ''}`}
-              >
-                Profile
-              </Link>
-              <Link 
-                to="/funding-opportunities" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/funding-opportunities') ? 'bg-gray-100' : ''}`}
-              >
-                Funding Opportunities
-              </Link>
-              <Link 
-                to="/applications" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/applications') ? 'bg-gray-100' : ''}`}
-              >
-                Applications
-              </Link>
-              <Link 
-                to="/documents" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/documents') ? 'bg-gray-100' : ''}`}
-              >
-                Documents
-              </Link>
-              <Link 
-                to="/notifications" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/notifications') ? 'bg-gray-100' : ''}`}
-              >
-                Notifications
-              </Link>
-              <Link 
-                to="/user-engagement" 
-                className={`px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 ${isActive('/user-engagement') ? 'bg-gray-100' : ''}`}
-              >
-                Engagement
-              </Link>
+    <nav className="gov-navbar">
+
+      {/* ── Top identity bar ── */}
+      <div className="gov-navbar-top">
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0.6rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+            <div style={{ width: 40, height: 40, background: 'var(--grad-blue)', borderRadius: 'var(--r-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-blue)', flexShrink: 0 }}>
+              <span style={{ color: 'var(--gold)', fontWeight: 900, fontSize: '1.125rem' }}>G</span>
+            </div>
+            <div>
+              <div style={{ color: 'white', fontWeight: 800, fontSize: '1rem', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
+                Funding Intelligence Platform
+              </div>
+              <div style={{ color: 'var(--gold)', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                Four Horsemen Technologies · SMME Portal
+              </div>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-700">Welcome, {user?.username || user?.user || 'User'}</span>
+
+          {/* User + actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ color: 'white', fontSize: '0.875rem', fontWeight: 700, lineHeight: 1.2 }}>{businessName}</div>
+              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.7rem', letterSpacing: '0.04em' }}>Logged in as SMME</div>
+            </div>
+            <Link to="/support" className="gov-btn gov-btn-ghost" style={{ padding: '0.375rem 0.875rem', fontSize: '0.8125rem' }}>
+              Help
+            </Link>
             <button
-              onClick={() => {
-                onLogout();
-                navigate('/');
-              }}
-              className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md text-sm font-medium"
+              onClick={() => { onLogout(); navigate('/'); }}
+              className="gov-btn"
+              style={{ background: '#c0392b', color: 'white', padding: '0.375rem 1rem', fontSize: '0.8125rem', boxShadow: 'none' }}
             >
               Logout
             </button>
-            <Link 
-              to="/support"
-              className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Help
-            </Link>
           </div>
         </div>
       </div>
+
+      {/* ── Nav links bar ── */}
+      <div className="gov-navbar-links">
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 2rem', display: 'flex', alignItems: 'center', gap: '0.25rem', height: '3rem' }}>
+          {NAV_LINKS.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`gov-nav-link${isActive(to) ? ' active' : ''}`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
     </nav>
   );
 };

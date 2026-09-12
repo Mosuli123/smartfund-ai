@@ -1,73 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import ModernIcons from '../components/ModernIcons';
+import { ModernIcons } from '../components/ModernIcons';
 
 const Notifications = ({ user }) => {
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadNotifications();
   }, []);
 
   const loadNotifications = () => {
-    // Generate notifications based on user activity
-    const matches = JSON.parse(localStorage.getItem('matchedOpportunities') || '[]');
-    const applications = JSON.parse(localStorage.getItem('userApplications') || '[]');
-    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-    
-    const notifs = [
-      ...matches.slice(0, 3).map((match, index) => ({
-        id: `match-${index}`,
-        type: 'match',
-        title: 'New Funding Match Found',
-        message: `${match.name} matches your business profile with ${match.match_score}% compatibility`,
-        timestamp: new Date(Date.now() - index * 2 * 60 * 60 * 1000).toISOString(),
-        read: index > 0,
-        actionUrl: '/funding-opportunities',
-        priority: match.match_score >= 80 ? 'high' : 'normal'
-      })),
-      ...applications.map((app, index) => ({
-        id: `app-${index}`,
-        type: 'application',
-        title: 'Application Status Update',
-        message: `Your application for ${app.opportunity_name} is now ${app.status.toLowerCase()}`,
-        timestamp: new Date(app.last_updated).toISOString(),
-        read: app.status !== 'Approved',
-        actionUrl: '/applications',
-        priority: app.status === 'Approved' ? 'high' : 'normal'
-      })),
-      // Engagement notifications
-      {
-        id: 'achievement-unlock',
-        type: 'achievement',
-        title: 'Achievement Unlocked!',
-        message: 'You\'ve completed your business profile. Great job!',
-        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-        read: false,
-        actionUrl: '/user-engagement',
-        priority: 'high'
-      },
-      {
-        id: 'weekly-goal',
-        type: 'goal',
-        title: 'Weekly Goal Progress',
-        message: 'You\'re 80% towards your weekly application goal. Keep it up!',
-        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        read: false,
-        actionUrl: '/user-engagement'
-      },
-      {
-        id: 'welcome',
-        type: 'system',
-        title: 'Welcome to SmartFund AI',
-        message: 'Complete your business profile to start receiving funding matches',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        read: true,
-        actionUrl: '/profile'
-      }
-    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    try {
+      // Generate notifications based on user activity
+      const matches = JSON.parse(localStorage.getItem('matchedOpportunities') || '[]');
+      const applications = JSON.parse(localStorage.getItem('userApplications') || '[]');
+      const profile = JSON.parse(localStorage.getItem('businessProfile') || '{}');
+      
+      const notifs = [
+        ...matches.slice(0, 3).map((match, index) => ({
+          id: `match-${index}`,
+          type: 'match',
+          title: 'New Funding Match Found',
+          message: `${match.name} matches your business profile with ${match.match_score}% compatibility`,
+          timestamp: new Date(Date.now() - index * 2 * 60 * 60 * 1000).toISOString(),
+          read: index > 0,
+          actionUrl: '/funding-opportunities',
+          priority: match.match_score >= 80 ? 'high' : 'normal'
+        })),
+        ...applications.slice(0, 3).map((app, index) => ({
+          id: `app-${index}`,
+          type: 'application',
+          title: 'Application Status Update',
+          message: `Your application for ${app.opportunity_name} is now ${app.status.toLowerCase()}`,
+          timestamp: new Date(app.last_updated || Date.now()).toISOString(),
+          read: app.status !== 'Approved',
+          actionUrl: '/applications',
+          priority: app.status === 'Approved' ? 'high' : 'normal'
+        })),
+        // System notifications
+        {
+          id: 'achievement-unlock',
+          type: 'achievement',
+          title: 'Achievement Unlocked!',
+          message: 'You have completed your business profile. Great job!',
+          timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+          read: false,
+          actionUrl: '/profile',
+          priority: 'high'
+        },
+        {
+          id: 'weekly-goal',
+          type: 'goal',
+          title: 'Weekly Goal Progress',
+          message: 'You are 80% towards your weekly application goal. Keep it up!',
+          timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+          read: false,
+          actionUrl: '/applications',
+          priority: 'normal'
+        },
+        {
+          id: 'welcome',
+          type: 'system',
+          title: 'Welcome to SmartFund AI',
+          message: 'Complete your business profile to start receiving funding matches',
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          read: true,
+          actionUrl: '/profile',
+          priority: 'normal'
+        }
+      ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    setNotifications(notifs);
+      setNotifications(notifs);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to load notifications');
+      setLoading(false);
+      console.error('Notification loading error:', err);
+    }
   };
 
   const markAsRead = (id) => {
@@ -112,6 +123,40 @@ const Notifications = ({ user }) => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen py-8" style={{background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%)'}}>
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="modern-card p-8 text-center">
+            <ModernIcons.Bell className="w-12 h-12 mx-auto mb-4 animate-pulse" color="#4180be" />
+            <h2 className="text-xl font-semibold mb-2" style={{color: '#1e3a5f'}}>Loading Notifications...</h2>
+            <p style={{color: '#64748b'}}>Please wait while we fetch your updates</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen py-8" style={{background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%)'}}>
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="modern-card p-8 text-center">
+            <ModernIcons.Info className="w-12 h-12 mx-auto mb-4" color="#ef4444" />
+            <h2 className="text-xl font-semibold mb-2 text-red-600">Error Loading Notifications</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button 
+              onClick={loadNotifications} 
+              className="btn-primary"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-8" style={{background: 'linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%)'}}>

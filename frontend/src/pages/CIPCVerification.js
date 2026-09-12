@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Logo from '../components/Logo';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const CIPCVerification = () => {
   const [step, setStep] = useState(1);
@@ -14,182 +13,135 @@ const CIPCVerification = () => {
   const [verificationSteps, setVerificationSteps] = useState([]);
   const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleInputChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCIPCVerification = async (e) => {
+  const handleVerification = async e => {
     e.preventDefault();
     setLoading(true);
+    setVerificationSteps([]);
 
-    try {
-      // Seamless verification animation
-      setCurrentStep('🔍 Connecting to CIPC Database...');
-      setVerificationSteps(['🔍 Initiating CIPC Database connection...']);
-      
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setCurrentStep('✅ Connected to CIPC Database');
-      setVerificationSteps(prev => [...prev, '✅ Connected to CIPC Database']);
-      
-      await new Promise(resolve => setTimeout(resolve, 600));
-      setCurrentStep('🔎 Querying company registration records...');
-      setVerificationSteps(prev => [...prev, '🔎 Querying company registration records...']);
-      
-      await new Promise(resolve => setTimeout(resolve, 700));
-      setCurrentStep('🆔 Cross-referencing director ID number...');
-      setVerificationSteps(prev => [...prev, '🆔 Cross-referencing director ID number...']);
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setCurrentStep('✅ CIPC Verification Completed');
-      setVerificationSteps(prev => [...prev, '✅ Registration number found and verified', '✅ Company status: Active', '✅ Director ID verified in company records', '✅ Enhanced security verification completed']);
-      
-      await new Promise(resolve => setTimeout(resolve, 400));
-      setCurrentStep('🚀 Creating account...');
-      
-      // Demo company data
-      const demoData = {
-        registrationNumber: formData.cipcRegistrationNumber,
-        companyName: 'AutoTech Manufacturing (Pty) Ltd',
-        status: 'Active',
-        registrationDate: '2019-05-15',
-        businessType: 'Private Company',
-        industry: 'Automotive',
-        registeredAddress: 'East London Industrial Development Zone, Eastern Cape',
-        verifiedDirector: { name: 'John Smith', idNumber: formData.directorIdNumber, role: 'CEO' }
-      };
+    const steps = [
+      [800, '🔍 Connecting to CIPC Database...', '🔍 Initiating CIPC Database connection...'],
+      [600, '✅ Connected to CIPC Database', '✅ Connected to CIPC Database'],
+      [700, '🔎 Querying company registration records...', '🔎 Querying company registration records...'],
+      [600, '🆔 Cross-referencing director ID number...', '🆔 Cross-referencing director ID number...'],
+      [500, '✅ CIPC Verification Completed', null],
+    ];
 
-      const username = demoData.registrationNumber.replace(/[^a-zA-Z0-9]/g, '');
-      const tempPassword = 'temp123';
-      
-      // Store user data
-      const userData = {
-        username: username,
-        role: 'smme',
-        cipcData: demoData,
-        registrationDate: new Date().toISOString(),
-        status: 'Active',
-        profileComplete: false
-      };
-
-      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      users.push(userData);
-      localStorage.setItem('registeredUsers', JSON.stringify(users));
-
-      const credentials = JSON.parse(localStorage.getItem('userCredentials') || '{}');
-      credentials[username] = {
-        password: tempPassword,
-        role: 'smme',
-        cipcData: demoData
-      };
-      localStorage.setItem('userCredentials', JSON.stringify(credentials));
-
-      await new Promise(resolve => setTimeout(resolve, 600));
-      setVerificationResult({
-        cipcData: demoData,
-        username: username,
-        tempPassword: tempPassword
-      });
-      setStep(2);
-
-    } catch (error) {
-      console.error('Verification error:', error);
-    } finally {
-      setLoading(false);
+    for (const [delay, label, log] of steps) {
+      await new Promise(r => setTimeout(r, delay));
+      setCurrentStep(label);
+      if (log) setVerificationSteps(prev => [...prev, log]);
     }
+
+    setVerificationSteps(prev => [
+      ...prev,
+      '✅ Registration number found and verified',
+      '✅ Company status: Active',
+      '✅ Director ID verified in company records',
+      '✅ Verification completed successfully'
+    ]);
+
+    await new Promise(r => setTimeout(r, 400));
+
+    const demoData = {
+      registrationNumber: formData.cipcRegistrationNumber,
+      companyName: 'AutoTech Manufacturing (Pty) Ltd',
+      status: 'Active',
+      registrationDate: '2019-05-15',
+      businessType: 'Private Company',
+      industry: 'Manufacturing',
+      registeredAddress: 'East London Industrial Development Zone, Eastern Cape',
+      verifiedDirector: { name: 'John Smith', idNumber: formData.directorIdNumber, role: 'CEO' }
+    };
+
+    const username = demoData.registrationNumber.replace(/[^a-zA-Z0-9]/g, '');
+    const tempPassword = 'temp123';
+
+    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    users.push({ username, role: 'smme', cipcData: demoData, registrationDate: new Date().toISOString(), status: 'Active' });
+    localStorage.setItem('registeredUsers', JSON.stringify(users));
+
+    const credentials = JSON.parse(localStorage.getItem('userCredentials') || '{}');
+    credentials[username] = { password: tempPassword, role: 'smme', cipcData: demoData };
+    localStorage.setItem('userCredentials', JSON.stringify(credentials));
+
+    setVerificationResult({ cipcData: demoData, username, tempPassword });
+    setStep(2);
+    setLoading(false);
   };
 
-  const handleGoToLogin = () => {
-    navigate('/smme/login');
-  };
+  const header = (
+    <header style={{ background: '#0a2240', borderBottom: '3px solid #c8922a', padding: '0 1.5rem' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', height: '4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: '#c8922a', fontWeight: 800, fontSize: '0.875rem' }}>G</span>
+          </div>
+          <div>
+            <div style={{ color: 'white', fontWeight: 700, fontSize: '0.875rem' }}>Government Funding Intelligence & Access Platform</div>
+            <div style={{ color: '#c8922a', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Four Horsemen Technologies | SITA GovTech Hackathon 2026</div>
+          </div>
+        </div>
+        <Link to="/" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', textDecoration: 'none' }}>← Back</Link>
+      </div>
+    </header>
+  );
 
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200">
-        <header className="bg-white shadow-lg">
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            <div className="flex items-center space-x-4">
-              <Logo className="h-10" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">SmartFund AI</h1>
-                <p className="text-xs text-gray-500">CIPC Verification Complete</p>
+      <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
+        {header}
+        <div style={{ maxWidth: 640, margin: '3rem auto', padding: '0 1rem' }}>
+          <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 16px rgba(10,34,64,0.08)', padding: '2.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <div style={{ width: 72, height: 72, background: '#f0fdf4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', border: '2px solid #bbf7d0' }}>
+                <svg width="36" height="36" fill="none" stroke="#1a7a4a" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#166534', marginBottom: '0.375rem' }}>CIPC Verification Successful</h1>
+              <p style={{ color: '#64748b' }}>Your business is now verified and registered in the platform</p>
             </div>
-          </div>
-        </header>
 
-        <div className="py-16">
-          <div className="max-w-2xl mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <div className="text-center mb-8">
-                <div className="text-8xl mb-6 text-green-600">✓</div>
-                <h1 className="text-4xl font-bold text-green-900 mb-3">Verification Successful!</h1>
-                <p className="text-green-700 text-lg">Your CIPC registration has been verified</p>
-              </div>
-
-              {verificationResult && (
-                <div className="space-y-6">
-                  <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                    <h3 className="font-bold text-green-900 mb-4 text-lg flex items-center">
-                      <span className="text-xl mr-2">🏢</span> Company Information Verified
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4 text-sm">
-                      <div className="bg-white p-3 rounded-lg">
-                        <strong className="text-green-900">Company Name:</strong><br/>
-                        <span className="text-gray-800 font-semibold">{verificationResult.cipcData.companyName}</span>
+            {verificationResult && (
+              <>
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '1.25rem', marginBottom: '1.25rem' }}>
+                  <p style={{ fontWeight: 600, color: '#166534', marginBottom: '0.75rem', fontSize: '0.9375rem' }}>✅ Verified Business Information</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.875rem' }}>
+                    {[
+                      ['Company', verificationResult.cipcData.companyName],
+                      ['Registration', verificationResult.cipcData.registrationNumber],
+                      ['Industry', verificationResult.cipcData.industry],
+                      ['Status', verificationResult.cipcData.status]
+                    ].map(([k, v]) => (
+                      <div key={k} style={{ background: 'white', borderRadius: '0.375rem', padding: '0.625rem' }}>
+                        <div style={{ color: '#64748b', fontSize: '0.75rem', marginBottom: '0.25rem' }}>{k}</div>
+                        <div style={{ fontWeight: 600, color: '#0a2240' }}>{v}</div>
                       </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <strong className="text-green-900">Registration Number:</strong><br/>
-                        <span className="text-gray-800 font-mono">{verificationResult.cipcData.registrationNumber}</span>
-                      </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <strong className="text-green-900">Industry:</strong><br/>
-                        <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-medium">{verificationResult.cipcData.industry}</span>
-                      </div>
-                      <div className="bg-white p-3 rounded-lg">
-                        <strong className="text-green-900">Status:</strong><br/>
-                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">{verificationResult.cipcData.status}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                    <h3 className="font-bold text-blue-900 mb-4 text-lg flex items-center">
-                      <span className="text-xl mr-2">🎉</span> Account Created Successfully!
-                    </h3>
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <strong className="text-blue-900">Username:</strong>
-                          <span className="font-mono text-blue-700 font-semibold">{verificationResult.username}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <strong className="text-blue-900">Temporary Password:</strong>
-                          <span className="font-mono text-blue-700 font-semibold">{verificationResult.tempPassword}</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-3 text-center">
-                        You can change your password after logging in
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="text-center mt-8">
-                    <button
-                      onClick={handleGoToLogin}
-                      className="bg-green-600 hover:bg-green-700 text-white py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-200"
-                    >
-                      <span className="flex items-center">
-                        <span className="mr-2">🚀</span>
-                        Access SMME Dashboard
-                      </span>
-                    </button>
+                    ))}
                   </div>
                 </div>
-              )}
-            </div>
+
+                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.5rem', padding: '1.25rem', marginBottom: '1.5rem' }}>
+                  <p style={{ fontWeight: 600, color: '#1e40af', marginBottom: '0.75rem', fontSize: '0.9375rem' }}>🔑 Account Access Created</p>
+                  <div style={{ background: 'white', borderRadius: '0.375rem', padding: '0.875rem', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                    <div style={{ marginBottom: '0.375rem' }}><strong>Username:</strong> {verificationResult.username}</div>
+                    <div><strong>Password:</strong> {verificationResult.tempPassword}</div>
+                  </div>
+                  <p style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.5rem' }}>Save these credentials. You can update your password after logging in.</p>
+                </div>
+
+                <button
+                  onClick={() => navigate('/smme/login')}
+                  style={{ width: '100%', background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.875rem', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
+                >
+                  Access SMME Dashboard →
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -197,124 +149,78 @@ const CIPCVerification = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200">
-      <header className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Logo className="h-10" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">SmartFund AI</h1>
-                <p className="text-xs text-gray-500">CIPC Business Verification</p>
-              </div>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
+      {header}
+      <div style={{ maxWidth: 580, margin: '3rem auto', padding: '0 1rem' }}>
+        <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 16px rgba(10,34,64,0.08)', padding: '2.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
             </div>
-            <button
-              onClick={() => navigate('/')}
-              className="text-orange-600 hover:text-orange-700 font-medium"
-            >
-              Back to Home
-            </button>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a2240', marginBottom: '0.375rem' }}>CIPC Business Verification</h1>
+            <p style={{ color: '#64748b' }}>Verify your business registration to access government funding opportunities</p>
           </div>
-        </div>
-      </header>
 
-      <div className="py-16">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-6">
-                <Logo className="h-16" />
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.5rem', fontSize: '0.875rem', color: '#1e40af' }}>
+            <strong>Demo mode:</strong> Fields are pre-filled. Click verify to experience the CIPC verification flow.
+          </div>
+
+          {loading && (
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <div className="loading-spinner" style={{ borderColor: 'rgba(26,122,74,0.3)', borderTopColor: '#1a7a4a' }} />
+                <span style={{ fontWeight: 600, color: '#166534', fontSize: '0.875rem' }}>{currentStep}</span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-3">CIPC Business Verification</h1>
-              <p className="text-gray-600 text-lg">Verify your business registration to access funding opportunities</p>
+              {verificationSteps.map((s, i) => (
+                <div key={i} style={{ fontSize: '0.8125rem', color: '#166534', paddingLeft: '2rem' }}>• {s}</div>
+              ))}
+            </div>
+          )}
+
+          <form onSubmit={handleVerification} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>CIPC Registration Number *</label>
+              <input
+                type="text"
+                name="cipcRegistrationNumber"
+                required
+                className="modern-input"
+                style={{ textAlign: 'center', fontWeight: 600 }}
+                value={formData.cipcRegistrationNumber}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>Director ID Number *</label>
+              <input
+                type="text"
+                name="directorIdNumber"
+                required
+                maxLength="13"
+                className="modern-input"
+                style={{ textAlign: 'center', fontWeight: 600 }}
+                value={formData.directorIdNumber}
+                onChange={handleInputChange}
+              />
+              <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.375rem', textAlign: 'center' }}>ID number of a registered company director</p>
             </div>
 
-            <div className="bg-orange-50 p-6 rounded-lg mb-6 border-l-4 border-orange-500">
-              <h3 className="font-semibold text-orange-900 mb-2 flex items-center">
-                <span className="text-xl mr-2">🚀</span> Instant Verification
-              </h3>
-              <div className="text-orange-800 text-sm space-y-1">
-                <p>• Pre-filled with demo data for instant testing</p>
-                <p>• Real-time CIPC database verification</p>
-                <p>• Automatic account creation upon verification</p>
-              </div>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.875rem', fontWeight: 600, fontSize: '0.9375rem', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+            >
+              {loading && <span className="loading-spinner" />}
+              {loading ? currentStep || 'Verifying...' : 'Verify Business Registration'}
+            </button>
+          </form>
 
-            {loading && currentStep && (
-              <div className="bg-blue-50 p-6 rounded-lg mb-6 border-l-4 border-blue-500">
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
-                  <div>
-                    <p className="font-semibold text-blue-900">{currentStep}</p>
-                    {verificationSteps.length > 0 && (
-                      <ul className="text-xs mt-2 space-y-1 text-blue-800">
-                        {verificationSteps.map((step, index) => (
-                          <li key={index}>• {step}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <form onSubmit={handleCIPCVerification} className="space-y-6">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    CIPC Registration Number *
-                  </label>
-                  <input
-                    type="text"
-                    name="cipcRegistrationNumber"
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-center text-lg font-semibold"
-                    placeholder="Auto-filled for demo"
-                    value={formData.cipcRegistrationNumber}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Director ID Number * (Enhanced Security)
-                  </label>
-                  <input
-                    type="text"
-                    name="directorIdNumber"
-                    required
-                    maxLength="13"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-center text-lg font-semibold"
-                    placeholder="Auto-filled for demo"
-                    value={formData.directorIdNumber}
-                    onChange={handleInputChange}
-                  />
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    ID number of a registered company director
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-8 py-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 font-medium text-lg transition-colors duration-200"
-                >
-                  {loading ? (
-                    <span className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      {currentStep || 'Verifying...'}
-                    </span>
-                  ) : (
-                    <span className="flex items-center">
-                      <span className="mr-2">🚀</span>
-                      Verify Business Registration
-                    </span>
-                  )}
-                </button>
-              </div>
-            </form>
+          <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+            <Link to="/smme/login" style={{ color: '#1a4f8a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>
+              Already verified? Login here →
+            </Link>
           </div>
         </div>
       </div>

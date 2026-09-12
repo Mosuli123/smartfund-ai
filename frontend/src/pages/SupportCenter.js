@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Logo from '../components/Logo';
 
 const SupportCenter = ({ user }) => {
   const [activeSection, setActiveSection] = useState('getting-started');
@@ -36,7 +35,7 @@ const SupportCenter = ({ user }) => {
         },
         {
           question: 'What industries are supported?',
-          answer: 'We focus on ELIDZ partner industries: Manufacturing, Automotive, Agriculture, ICT & Electronics, and Renewable Energy. These sectors have the most funding opportunities available.'
+          answer: 'We support all major South African industries including Manufacturing, Technology, Agriculture, ICT & Electronics, Renewable Energy, Retail, Services, and more. Our national funding programmes cover all sectors.'
         },
         {
           question: 'Can I update my profile later?',
@@ -59,7 +58,7 @@ const SupportCenter = ({ user }) => {
         },
         {
           question: 'How often are new opportunities added?',
-          answer: 'Funding opportunities are updated regularly by our partner organizations (ELIDZ, AIDC, TIA). Check your notifications for alerts about new matches.'
+          answer: 'Funding opportunities are updated regularly by our government partner organisations (SEDA, IDC, TIA, DAFF, NEF, DBSA). Check your notifications for alerts about new matches.'
         }
       ]
     },
@@ -138,13 +137,21 @@ const SupportCenter = ({ user }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200 py-8">
+    <div className="min-h-screen py-8" style={{ background: '#f0f4f8' }}>
       <div className="max-w-6xl mx-auto px-4">
-      <div className="text-center mb-8">
-        <Logo className="h-16 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Support Center</h1>
-        <p className="text-gray-600">Everything you need to know about using SmartFund AI</p>
-      </div>
+        <div className="text-center mb-8 py-8 rounded-xl" style={{ background: '#0a2240', borderBottom: '4px solid #c8922a' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            <div style={{ width: 48, height: 48, background: 'linear-gradient(135deg, #1a4f8a, #2d6cc0)', borderRadius: '0.625rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#c8922a', fontWeight: 900, fontSize: '1.5rem' }}>G</span>
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ color: 'white', fontWeight: 800, fontSize: '1.25rem', lineHeight: 1.2 }}>Funding Intelligence Platform</div>
+              <div style={{ color: '#c8922a', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Four Horsemen Technologies · SMME Portal</div>
+            </div>
+          </div>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'white' }}>Support Center</h1>
+          <p style={{ color: 'rgba(255,255,255,0.65)' }}>Everything you need to know about using the platform</p>
+        </div>
 
       <div className="mb-8">
         <div className="max-w-md mx-auto">

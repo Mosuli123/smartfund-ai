@@ -16,7 +16,8 @@
     "postcss": "^8.4.32"
   },
   "scripts": {
-    "start": "set PORT=3025 && react-scripts start",
+    "start": "set PORT=3501 && react-scripts start",
+    "start:enterprise": "set PORT=3500 && set REACT_APP_API_URL=http://localhost:8500 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

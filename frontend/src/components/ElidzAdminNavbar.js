@@ -1,115 +1,73 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import Logo from './Logo';
-import ModernIcons from './ModernIcons';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ModernIcons } from './ModernIcons';
 
 const ElidzAdminNavbar = ({ admin, onLogout }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
+
+  const navItems = [
+    { path: '/sita-admin/dashboard', label: 'Dashboard', icon: ModernIcons.Home },
+    { path: '/sita-admin/user-management', label: 'Users', icon: ModernIcons.Users },
+    { path: '/sita-admin/approve-users', label: 'Approvals', icon: ModernIcons.CheckCircle },
+    { path: '/sita-admin/funding-admins', label: 'Providers', icon: ModernIcons.Briefcase },
+    { path: '/sita-admin/reports', label: 'Reports', icon: ModernIcons.FileText },
+    { path: '/sita-admin/analytics', label: 'Analytics', icon: ModernIcons.Chart },
+  ];
+
+  const linkStyle = (path) => ({
+    display: 'flex', alignItems: 'center', gap: '0.375rem',
+    padding: '0.4rem 0.75rem', borderRadius: '0.375rem',
+    textDecoration: 'none', fontSize: '0.875rem', fontWeight: isActive(path) ? 700 : 500,
+    color: isActive(path) ? '#c8922a' : 'rgba(255,255,255,0.75)',
+    background: isActive(path) ? 'rgba(200,146,42,0.15)' : 'transparent',
+    whiteSpace: 'nowrap', transition: 'all 0.15s',
+  });
 
   return (
-    <nav className="bg-white shadow-lg border-b" style={{borderColor: '#e2e8f0'}}>
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <div className="flex items-center space-x-4">
-            <Link to="/elidz-admin/dashboard" className="flex items-center">
-              <Logo className="h-12" />
-              <div className="ml-3">
-                <div className="font-bold text-sm" style={{color: '#1e3a5f'}}>ELIDZ SYSTEM</div>
-                <div className="text-xs" style={{color: '#64748b'}}>Administrator Portal</div>
-              </div>
-            </Link>
-            <div className="hidden md:flex space-x-4">
-              <Link 
-                to="/elidz-admin/dashboard" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/elidz-admin/dashboard') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ModernIcons.Home className="w-4 h-4" />
-                <span>Dashboard</span>
-              </Link>
-              <Link 
-                to="/elidz-admin/user-management" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/elidz-admin/user-management') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ModernIcons.Users className="w-4 h-4" />
-                <span>Users</span>
-              </Link>
-              <Link 
-                to="/elidz-admin/approve-users" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/elidz-admin/approve-users') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ModernIcons.CheckCircle className="w-4 h-4" />
-                <span>Approvals</span>
-              </Link>
-              <Link 
-                to="/elidz-admin/funding-admins" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/elidz-admin/funding-admins') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ModernIcons.Briefcase className="w-4 h-4" />
-                <span>Admins</span>
-              </Link>
-              <Link 
-                to="/elidz-admin/reports" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/elidz-admin/reports') 
-                    ? 'bg-orange-50 text-orange-700 border border-orange-200' 
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ModernIcons.FileText className="w-4 h-4" />
-                <span>Reports</span>
-              </Link>
-              <Link 
-                to="/elidz-admin/analytics" 
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/elidz-admin/analytics') 
-                    ? 'bg-blue-50 text-blue-700 border border-blue-200' 
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <ModernIcons.Chart className="w-4 h-4" />
-                <span>Analytics</span>
-              </Link>
+    <nav style={{ background: '#0a2240', borderBottom: '3px solid #1a7a4a', position: 'sticky', top: 0, zIndex: 100 }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '4rem' }}>
+
+          {/* Brand */}
+          <Link to="/sita-admin/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#1a7a4a,#22a05a)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ModernIcons.Shield style={{ width: 20, height: 20, color: 'white' }} />
             </div>
+            <div>
+              <div style={{ color: 'white', fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.2 }}>SITA GovTech</div>
+              <div style={{ color: '#1a7a4a', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>System Administration</div>
+            </div>
+          </Link>
+
+          {/* Nav Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.125rem' }}>
+            {navItems.map(({ path, label, icon: Icon }) => (
+              <Link key={path} to={path} style={linkStyle(path)}>
+                <Icon style={{ width: 14, height: 14 }} />
+                {label}
+              </Link>
+            ))}
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 px-3 py-2 rounded-lg" style={{backgroundColor: '#f0f4f8'}}>
-              <ModernIcons.Shield className="w-4 h-4" color="#1e3a5f" />
-              <span className="text-sm font-medium" style={{color: '#1e3a5f'}}>
-                {admin?.fullName || 'ELIDZ Admin'}
+
+          {/* User + Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(26,122,74,0.2)', padding: '0.375rem 0.75rem', borderRadius: '0.375rem' }}>
+              <ModernIcons.Shield style={{ width: 14, height: 14, color: '#1a7a4a' }} />
+              <span style={{ color: 'white', fontSize: '0.8125rem', fontWeight: 600 }}>
+                {admin?.fullName || 'SITA Admin'}
               </span>
             </div>
             <button
-              onClick={onLogout}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
-              style={{backgroundColor: '#dc2626'}}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
+              onClick={() => { onLogout(); navigate('/'); }}
+              style={{ background: '#c0392b', color: 'white', border: 'none', padding: '0.375rem 0.875rem', borderRadius: '0.375rem', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}
             >
-              <ModernIcons.LogOut className="w-4 h-4" />
-              <span>Logout</span>
+              Logout
             </button>
           </div>
+
         </div>
       </div>
     </nav>

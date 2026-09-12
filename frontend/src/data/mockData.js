@@ -1,219 +1,281 @@
-// Mock funding opportunities data for ELIDZ partner industries
+// Government Funding Intelligence & Access Platform — Demo Dataset
+// Prototype data for SITA GovTech Hackathon 2026 demonstration
+
 export const fundingOpportunities = [
   {
     id: 1,
-    name: "ELIDZ Manufacturing Excellence Grant",
-    type: "Grant",
-    description: "Supporting manufacturing companies in the East London IDZ with advanced production capabilities and export potential.",
-    min_amount: 100000,
-    max_amount: 1000000,
-    sectors: ["Manufacturing", "Automotive"],
-    eligible_regions: ["Eastern Cape", "Buffalo City", "Nelson Mandela Bay"],
-    min_years_operation: 2,
-    max_years_operation: 15,
+    name: 'SEDA SMME Growth Fund',
+    type: 'Grant',
+    description: 'Supporting small and medium enterprises across South Africa with growth capital for business expansion, equipment and working capital.',
+    min_amount: 50000,
+    max_amount: 500000,
+    sectors: ['Manufacturing', 'Agriculture', 'Retail', 'Services', 'Tourism'],
+    eligible_regions: ['Gauteng', 'KwaZulu-Natal', 'Eastern Cape', 'Western Cape', 'Limpopo', 'Mpumalanga', 'North West', 'Free State', 'Northern Cape', 'South Africa'],
+    min_years_operation: 1,
+    max_years_operation: 10,
     requires_cipc: true,
-    max_employees: 100,
-    max_turnover: 25000000,
-    funding_company: "East London Industrial Development Zone (ELIDZ)",
-    funding_industry: "Industrial Development",
-    contact_email: "funding@elidz.co.za"
+    max_employees: 50,
+    max_turnover: 10000000,
+    funding_company: 'Small Enterprise Development Agency (SEDA)',
+    funding_entity: 'Department of Small Business Development',
+    contact_email: 'info@seda.org.za',
+    application_deadline: '2026-06-30',
+    status: 'Open'
   },
   {
     id: 2,
-    name: "Automotive Supplier Development Fund",
-    type: "Loan",
-    description: "Low-interest financing for automotive component manufacturers and suppliers to enhance production capacity.",
+    name: 'IDC Manufacturing Competitiveness Fund',
+    type: 'Loan',
+    description: 'Low-interest financing for manufacturing enterprises to upgrade production capacity, acquire equipment and improve competitiveness.',
     min_amount: 200000,
-    max_amount: 2000000,
-    sectors: ["Automotive", "Manufacturing"],
-    eligible_regions: ["Eastern Cape", "Buffalo City", "OR Tambo District"],
-    min_years_operation: 1,
+    max_amount: 5000000,
+    sectors: ['Manufacturing', 'Automotive', 'Agro-processing', 'Green Economy'],
+    eligible_regions: ['Gauteng', 'KwaZulu-Natal', 'Eastern Cape', 'Western Cape', 'Mpumalanga', 'South Africa'],
+    min_years_operation: 2,
     max_years_operation: 20,
     requires_cipc: true,
-    max_employees: 150,
-    max_turnover: 40000000,
-    funding_company: "Automotive Industry Development Centre (AIDC)",
-    funding_industry: "Automotive Development",
-    contact_email: "funding@aidc.co.za"
+    max_employees: 200,
+    max_turnover: 50000000,
+    funding_company: 'Industrial Development Corporation (IDC)',
+    funding_entity: 'Department of Trade, Industry and Competition',
+    contact_email: 'callcentre@idc.co.za',
+    application_deadline: '2026-09-30',
+    status: 'Open'
   },
   {
     id: 3,
-    name: "ICT Innovation Accelerator",
-    type: "Equity",
-    description: "Equity investment for ICT and electronics companies developing innovative solutions for Industry 4.0.",
-    min_amount: 150000,
-    max_amount: 1500000,
-    sectors: ["ICT and Electronics", "Manufacturing"],
-    eligible_regions: ["Eastern Cape", "Buffalo City"],
+    name: 'TIA Technology Innovation Fund',
+    type: 'Grant',
+    description: 'Supporting technology and innovation-driven SMMEs developing solutions for Industry 4.0, digital transformation and emerging technologies.',
+    min_amount: 100000,
+    max_amount: 2000000,
+    sectors: ['Technology', 'ICT', 'Green Economy', 'Manufacturing'],
+    eligible_regions: ['Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape', 'South Africa'],
     min_years_operation: 0,
     max_years_operation: 8,
     requires_cipc: true,
     max_employees: 50,
-    max_turnover: 10000000,
-    funding_company: "Technology Innovation Agency (TIA)",
-    funding_industry: "Technology Development",
-    contact_email: "funding@tia.org.za"
+    max_turnover: 15000000,
+    funding_company: 'Technology Innovation Agency (TIA)',
+    funding_entity: 'Department of Science and Innovation',
+    contact_email: 'info@tia.org.za',
+    application_deadline: '2026-07-31',
+    status: 'Open'
   },
   {
     id: 4,
-    name: "Smart Agriculture Technology Fund",
-    type: "Grant",
-    description: "Supporting agricultural technology companies developing smart farming solutions and agri-processing innovations.",
+    name: 'DAFF Agricultural Development Grant',
+    type: 'Grant',
+    description: 'Supporting agricultural enterprises and agro-processors with production infrastructure, technology adoption and market access development.',
     min_amount: 75000,
-    max_amount: 750000,
-    sectors: ["Agriculture", "ICT and Electronics"],
-    eligible_regions: ["Eastern Cape", "Chris Hani District", "Amathole District"],
+    max_amount: 1000000,
+    sectors: ['Agriculture', 'Agro-processing', 'Food Processing'],
+    eligible_regions: ['Eastern Cape', 'Limpopo', 'Mpumalanga', 'North West', 'Free State', 'KwaZulu-Natal', 'Northern Cape', 'South Africa'],
     min_years_operation: 1,
-    max_years_operation: 12,
+    max_years_operation: 15,
     requires_cipc: true,
-    max_employees: 75,
+    max_employees: 100,
     max_turnover: 20000000,
-    funding_company: "East London Industrial Development Zone (ELIDZ)",
-    funding_industry: "Industrial Development",
-    contact_email: "agritech@elidz.co.za"
+    funding_company: 'Department of Agriculture, Land Reform and Rural Development',
+    funding_entity: 'DALRRD',
+    contact_email: 'info@dalrrd.gov.za',
+    application_deadline: '2026-05-31',
+    status: 'Open'
   },
   {
     id: 5,
-    name: "Renewable Energy Innovation Fund",
-    type: "Grant",
-    description: "Supporting renewable energy companies developing solar, wind, and energy storage solutions for industrial applications.",
-    min_amount: 250000,
-    max_amount: 2500000,
-    sectors: ["Renewable Energy", "Manufacturing"],
-    eligible_regions: ["Eastern Cape", "Buffalo City", "Nelson Mandela Bay"],
+    name: 'NEF Black Industrialists Programme',
+    type: 'Equity',
+    description: 'Equity and quasi-equity funding for black-owned and black-managed enterprises in productive sectors of the economy.',
+    min_amount: 500000,
+    max_amount: 10000000,
+    sectors: ['Manufacturing', 'Agriculture', 'Technology', 'Tourism', 'Services', 'Green Economy'],
+    eligible_regions: ['Gauteng', 'KwaZulu-Natal', 'Eastern Cape', 'Western Cape', 'Limpopo', 'Mpumalanga', 'North West', 'Free State', 'Northern Cape', 'South Africa'],
     min_years_operation: 1,
-    max_years_operation: 10,
+    max_years_operation: 20,
     requires_cipc: true,
-    max_employees: 100,
-    max_turnover: 30000000,
-    funding_company: "Technology Innovation Agency (TIA)",
-    funding_industry: "Technology Development",
-    contact_email: "renewable@tia.org.za"
+    max_employees: 200,
+    max_turnover: 50000000,
+    funding_company: 'National Empowerment Fund (NEF)',
+    funding_entity: 'Department of Trade, Industry and Competition',
+    contact_email: 'info@nef.org.za',
+    application_deadline: '2026-12-31',
+    status: 'Open'
   },
   {
     id: 6,
-    name: "Electronics Manufacturing Incentive",
-    type: "Subsidy",
-    description: "Manufacturing incentives for electronics companies producing components for automotive, renewable energy, and ICT sectors.",
-    min_amount: 100000,
-    max_amount: 1000000,
-    sectors: ["ICT and Electronics", "Automotive"],
-    eligible_regions: ["Eastern Cape", "Buffalo City"],
-    min_years_operation: 2,
+    name: 'DBSA Green Economy Fund',
+    type: 'Loan',
+    description: 'Financing for enterprises developing renewable energy, energy efficiency, waste management and green infrastructure solutions.',
+    min_amount: 300000,
+    max_amount: 8000000,
+    sectors: ['Green Economy', 'Renewable Energy', 'Manufacturing', 'Technology'],
+    eligible_regions: ['Gauteng', 'Western Cape', 'Northern Cape', 'Eastern Cape', 'KwaZulu-Natal', 'South Africa'],
+    min_years_operation: 1,
     max_years_operation: 15,
     requires_cipc: true,
-    max_employees: 80,
-    max_turnover: 25000000,
-    funding_company: "Automotive Industry Development Centre (AIDC)",
-    funding_industry: "Automotive Development",
-    contact_email: "electronics@aidc.co.za"
+    max_employees: 150,
+    max_turnover: 40000000,
+    funding_company: 'Development Bank of Southern Africa (DBSA)',
+    funding_entity: 'DBSA',
+    contact_email: 'info@dbsa.org',
+    application_deadline: '2026-08-31',
+    status: 'Open'
+  },
+  {
+    id: 7,
+    name: 'Tourism Enterprise Partnership Fund',
+    type: 'Grant',
+    description: 'Supporting tourism SMMEs with business development, infrastructure improvement and market access in South African tourism destinations.',
+    min_amount: 50000,
+    max_amount: 750000,
+    sectors: ['Tourism', 'Hospitality', 'Services'],
+    eligible_regions: ['Western Cape', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'Eastern Cape', 'Gauteng', 'South Africa'],
+    min_years_operation: 1,
+    max_years_operation: 12,
+    requires_cipc: true,
+    max_employees: 50,
+    max_turnover: 10000000,
+    funding_company: 'Tourism Enterprise Partnership (TEP)',
+    funding_entity: 'Department of Tourism',
+    contact_email: 'info@tep.co.za',
+    application_deadline: '2026-06-30',
+    status: 'Open'
+  },
+  {
+    id: 8,
+    name: 'Youth Enterprise Development Fund',
+    type: 'Grant',
+    description: 'Dedicated funding for youth-owned enterprises (18–35 years) across all sectors to stimulate youth entrepreneurship and job creation.',
+    min_amount: 25000,
+    max_amount: 250000,
+    sectors: ['Manufacturing', 'Agriculture', 'Technology', 'Retail', 'Services', 'Tourism', 'Green Economy'],
+    eligible_regions: ['Gauteng', 'KwaZulu-Natal', 'Eastern Cape', 'Western Cape', 'Limpopo', 'Mpumalanga', 'North West', 'Free State', 'Northern Cape', 'South Africa'],
+    min_years_operation: 0,
+    max_years_operation: 5,
+    requires_cipc: true,
+    max_employees: 20,
+    max_turnover: 5000000,
+    funding_company: 'National Youth Development Agency (NYDA)',
+    funding_entity: 'NYDA',
+    contact_email: 'info@nyda.gov.za',
+    application_deadline: '2026-10-31',
+    status: 'Open'
   }
 ];
 
-// Enhanced AI-powered matching algorithm
+// Enhanced AI-powered matching algorithm with explainable scoring
 export const calculateMatch = (profile, opportunity) => {
   let score = 0;
-  let explanations = [];
-  let criteriaMatches = [];
+  const criteriaMatches = [];
+  const explanations = [];
+  const gaps = [];
 
-  // CIPC Registration verification (mandatory)
+  // CIPC Registration (mandatory gate)
   if (!profile.cipc_registration_number) {
     return {
       ...opportunity,
       match_score: 0,
-      explanation: 'CIPC registration number required for SMME verification',
-      criteriaMatches: []
+      explanation: 'CIPC registration number required for eligibility assessment.',
+      criteriaMatches: [],
+      gaps: ['CIPC registration number required']
     };
   }
 
-  // Industry match (35% weight)
-  if (opportunity.sectors.includes(profile.industry)) {
+  // Industry/Sector match — 35% weight
+  const sectorMatch = opportunity.sectors.some(s =>
+    s.toLowerCase() === (profile.industry || '').toLowerCase()
+  );
+  if (sectorMatch) {
     score += 35;
-    explanations.push(`✓ Perfect industry match: ${profile.industry}`);
-    criteriaMatches.push({ criteria: 'Industry', match: true, weight: 35 });
+    explanations.push(`✓ Sector aligned: ${profile.industry}`);
+    criteriaMatches.push({ criteria: 'Sector', met: true, detail: `${profile.industry} is a target sector` });
   } else {
-    score += 8;
-    explanations.push(`⚠ Industry not directly matched, but opportunity accepts various sectors`);
-    criteriaMatches.push({ criteria: 'Industry', match: false, weight: 35 });
+    score += 5;
+    gaps.push(`Sector (${profile.industry}) not in primary target sectors`);
+    criteriaMatches.push({ criteria: 'Sector', met: false, detail: `Target sectors: ${opportunity.sectors.join(', ')}` });
   }
 
-  // Funding amount match (25% weight)
-  const requestedAmount = parseInt(profile.funding_amount);
-  if (requestedAmount >= opportunity.min_amount && requestedAmount <= opportunity.max_amount) {
+  // Funding amount — 25% weight
+  const amount = parseInt(profile.funding_amount) || 0;
+  if (amount >= opportunity.min_amount && amount <= opportunity.max_amount) {
     score += 25;
-    explanations.push(`✓ Funding amount (R${requestedAmount.toLocaleString()}) fits perfectly within range`);
-    criteriaMatches.push({ criteria: 'Funding Amount', match: true, weight: 25 });
-  } else if (requestedAmount < opportunity.min_amount) {
-    score += 12;
-    explanations.push(`⚠ Requested amount below minimum, consider applying for R${opportunity.min_amount.toLocaleString()}`);
-    criteriaMatches.push({ criteria: 'Funding Amount', match: false, weight: 25 });
-  } else {
-    score += 5;
-    explanations.push(`⚠ Requested amount exceeds maximum of R${opportunity.max_amount.toLocaleString()}`);
-    criteriaMatches.push({ criteria: 'Funding Amount', match: false, weight: 25 });
-  }
-
-  // Location match (20% weight)
-  if (opportunity.eligible_regions.includes(profile.location)) {
-    score += 20;
-    explanations.push(`✓ Location eligibility confirmed: ${profile.location}`);
-    criteriaMatches.push({ criteria: 'Location', match: true, weight: 20 });
-  } else {
-    score += 5;
-    explanations.push(`⚠ Location eligibility uncertain, verify requirements for ${profile.location}`);
-    criteriaMatches.push({ criteria: 'Location', match: false, weight: 20 });
-  }
-
-  // Business age match (10% weight)
-  const yearsInOperation = parseInt(profile.years_in_operation);
-  if (yearsInOperation >= opportunity.min_years_operation && yearsInOperation <= opportunity.max_years_operation) {
+    explanations.push(`✓ Funding requirement (R${amount.toLocaleString()}) within programme range`);
+    criteriaMatches.push({ criteria: 'Funding Amount', met: true, detail: `R${opportunity.min_amount.toLocaleString()} – R${opportunity.max_amount.toLocaleString()}` });
+  } else if (amount < opportunity.min_amount) {
     score += 10;
-    explanations.push(`✓ Business age (${yearsInOperation} years) meets requirements`);
-    criteriaMatches.push({ criteria: 'Business Age', match: true, weight: 10 });
+    gaps.push(`Requested amount below minimum (R${opportunity.min_amount.toLocaleString()})`);
+    criteriaMatches.push({ criteria: 'Funding Amount', met: false, detail: `Minimum: R${opportunity.min_amount.toLocaleString()}` });
+  } else {
+    score += 5;
+    gaps.push(`Requested amount exceeds maximum (R${opportunity.max_amount.toLocaleString()})`);
+    criteriaMatches.push({ criteria: 'Funding Amount', met: false, detail: `Maximum: R${opportunity.max_amount.toLocaleString()}` });
+  }
+
+  // Geographic eligibility — 20% weight
+  const locationMatch = opportunity.eligible_regions.some(r =>
+    r.toLowerCase() === (profile.location || '').toLowerCase() || r === 'South Africa'
+  );
+  if (locationMatch) {
+    score += 20;
+    explanations.push(`✓ Geographic eligibility confirmed: ${profile.location}`);
+    criteriaMatches.push({ criteria: 'Location', met: true, detail: `${profile.location} is eligible` });
   } else {
     score += 3;
-    explanations.push(`⚠ Business age may not fully meet requirements (${yearsInOperation} years)`);
-    criteriaMatches.push({ criteria: 'Business Age', match: false, weight: 10 });
+    gaps.push(`Location (${profile.location}) not in eligible regions`);
+    criteriaMatches.push({ criteria: 'Location', met: false, detail: `Eligible: ${opportunity.eligible_regions.slice(0, 3).join(', ')}...` });
   }
 
-  // SMME size verification (10% weight)
-  const employeeCount = parseInt(profile.employee_count);
-  const annualTurnover = parseInt(profile.annual_turnover);
-  
-  // SMME criteria: < 200 employees and < R50M turnover
-  if (employeeCount < 200 && annualTurnover < 50000000) {
+  // Business age — 10% weight
+  const years = parseInt(profile.years_in_operation) || 0;
+  if (years >= opportunity.min_years_operation && years <= opportunity.max_years_operation) {
     score += 10;
-    explanations.push(`✓ Qualifies as SMME (${employeeCount} employees, R${annualTurnover.toLocaleString()} turnover)`);
-    criteriaMatches.push({ criteria: 'SMME Status', match: true, weight: 10 });
+    explanations.push(`✓ Business age (${years} years) meets requirements`);
+    criteriaMatches.push({ criteria: 'Business Age', met: true, detail: `${opportunity.min_years_operation}–${opportunity.max_years_operation} years required` });
   } else {
     score += 2;
-    explanations.push(`⚠ May not qualify as SMME based on size criteria`);
-    criteriaMatches.push({ criteria: 'SMME Status', match: false, weight: 10 });
+    gaps.push(`Business age (${years} years) outside required range (${opportunity.min_years_operation}–${opportunity.max_years_operation} years)`);
+    criteriaMatches.push({ criteria: 'Business Age', met: false, detail: `Required: ${opportunity.min_years_operation}–${opportunity.max_years_operation} years` });
   }
+
+  // SMME size — 10% weight
+  const employees = parseInt(profile.employee_count) || 0;
+  const turnover = parseInt(profile.annual_turnover) || 0;
+  if (employees <= opportunity.max_employees && turnover <= opportunity.max_turnover) {
+    score += 10;
+    explanations.push(`✓ Qualifies as SMME (${employees} employees, R${turnover.toLocaleString()} turnover)`);
+    criteriaMatches.push({ criteria: 'SMME Eligibility', met: true, detail: `Within size thresholds` });
+  } else {
+    score += 2;
+    gaps.push('Business size may exceed SMME thresholds for this programme');
+    criteriaMatches.push({ criteria: 'SMME Eligibility', met: false, detail: `Max ${opportunity.max_employees} employees / R${opportunity.max_turnover.toLocaleString()} turnover` });
+  }
+
+  const matchScore = Math.min(score, 100);
+  const primaryReason = explanations.length > 0
+    ? `Your business was matched because ${explanations.slice(0, 2).map(e => e.replace('✓ ', '')).join(' and ')}.`
+    : 'Partial match based on available profile information.';
 
   return {
     ...opportunity,
-    match_score: Math.min(score, 100),
+    match_score: matchScore,
     explanation: explanations.join(' • '),
+    primaryReason,
     criteriaMatches,
-    fundingPurposeMatch: profile.funding_purpose
+    gaps,
+    nextAction: gaps.length === 0
+      ? 'Your profile meets all key criteria. Proceed to application.'
+      : `Address the following before applying: ${gaps[0]}`
   };
 };
 
-// Mock user authentication
+// Mock authentication
 export const mockLogin = (username, password) => {
   if (username === 'demo' && password === 'password123') {
     return {
       success: true,
-      data: {
-        user_id: 'demo_user',
-        username: 'demo',
-        token: 'mock_token_' + Date.now()
-      }
+      data: { user_id: 'demo_user', username: 'demo', token: 'mock_token_' + Date.now() }
     };
   }
-  return {
-    success: false,
-    error: 'Invalid credentials'
-  };
+  return { success: false, error: 'Invalid credentials' };
 };

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8008/api';
+const API_BASE_URL = 'http://localhost:8001/api';
 
 export class AIService {
   static async queryAssistant(message, userId = 'demo_user') {

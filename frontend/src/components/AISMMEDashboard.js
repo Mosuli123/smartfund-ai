@@ -12,7 +12,7 @@ const AISMMEDashboard = ({ user }) => {
 
   const fetchAIInsights = async () => {
     try {
-      const response = await fetch('http://localhost:8008/api/smme/ai-insights', {
+      const response = await fetch('http://localhost:8001/api/smme/ai-insights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: 'get insights', user_id: user?.user_id || 'demo_user' })

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getApplications, submitApplication } from '../services/applicationStore';
 
 const Applications = ({ user }) => {
   const [applications, setApplications] = useState([]);
@@ -53,24 +54,10 @@ const Applications = ({ user }) => {
   const handleSubmit = () => {
     setLoading(true);
     setTimeout(() => {
-      const application = {
-        id: `APP-${Date.now()}`,
-        opportunity_name: 'New Application',
-        funding_company: 'ELIDZ Funding',
-        amount_requested: profile.funding_amount,
-        status: 'Submitted',
-        submission_date: new Date().toISOString().split('T')[0],
-        last_updated: new Date().toISOString().split('T')[0],
-        match_score: 85,
-        contact_email: 'funding@elidz.co.za',
-        data: applicationData,
-        signature: signature
-      };
-      
-      const updatedApps = [...applications, application];
-      setApplications(updatedApps);
-      localStorage.setItem('userApplications', JSON.stringify(updatedApps));
-      
+      const selectedOpp = JSON.parse(localStorage.getItem('selectedOpportunity') || '{}');
+      const newApp = submitApplication(selectedOpp, profile || {}, applicationData, signature);
+      const all = getApplications();
+      setApplications(all);
       setShowNewApplication(false);
       setStep(1);
       setSignature('');
@@ -79,43 +66,8 @@ const Applications = ({ user }) => {
   };
 
   const loadApplications = () => {
-    const stored = localStorage.getItem('userApplications');
-    if (stored) {
-      setApplications(JSON.parse(stored));
-    } else {
-      const mockApps = generateMockApplications();
-      setApplications(mockApps);
-      localStorage.setItem('userApplications', JSON.stringify(mockApps));
-    }
+    setApplications(getApplications());
     setLoading(false);
-  };
-
-  const generateMockApplications = () => {
-    const profile = JSON.parse(localStorage.getItem('businessProfile') || '{}');
-    const matches = JSON.parse(localStorage.getItem('matchedOpportunities') || '[]');
-    
-    const statuses = ['Approved', 'Under Review', 'Submitted', 'Rejected'];
-    const statusMessages = {
-      'Approved': 'Congratulations! Your funding has been approved. Next steps will be communicated via email.',
-      'Under Review': 'Your application is currently being reviewed by our funding committee.',
-      'Submitted': 'Application successfully submitted and received.',
-      'Rejected': 'Unfortunately, your application was not successful. Please review feedback and consider reapplying.'
-    };
-    
-    return matches.slice(0, 4).map((match, index) => ({
-      id: `APP-${Date.now()}-${index}`,
-      opportunity_name: match.name,
-      funding_company: match.funding_company,
-      amount_requested: profile.funding_amount || 500000,
-      status: statuses[index] || 'Submitted',
-      status_message: statusMessages[statuses[index]] || statusMessages['Submitted'],
-      submission_date: new Date(Date.now() - (index * 7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
-      last_updated: new Date(Date.now() - (index * 2 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
-      match_score: match.match_score,
-      contact_email: match.contact_email,
-      approved_amount: statuses[index] === 'Approved' ? (profile.funding_amount || 500000) : null,
-      next_steps: statuses[index] === 'Approved' ? 'Funding agreement will be sent within 5 business days.' : null
-    }));
   };
 
   const getStatusColor = (status) => {
@@ -136,295 +88,165 @@ const Applications = ({ user }) => {
     }
   };
 
+  const ta = (field) => (
+    <textarea rows={4} className="modern-input" style={{ resize: 'vertical' }}
+      value={applicationData[field]} onChange={e => handleInputChange(field, e.target.value)} />
+  );
+
+  const btnRow = (left, right) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.25rem' }}>{left}{right}</div>
+  );
+
   const renderApplicationForm = () => {
-    if (step === 1) {
-      return (
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">📝 Complete Your Application</h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Executive Summary *</label>
-              <textarea
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                value={applicationData.executiveSummary}
-                onChange={(e) => handleInputChange('executiveSummary', e.target.value)}
-              />
+    if (step === 1) return (
+      <div>
+        <h3 style={{ fontWeight: 700, color: '#0a2240', marginBottom: '1.25rem' }}>📝 Application Details</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '1rem' }}>
+          {[['Executive Summary', 'executiveSummary'], ['Business Description', 'businessDescription'], ['Financial Information', 'financialInfo'], ['Use of Funds', 'useOfFunds']].map(([l, f]) => (
+            <div key={f}>
+              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>{l} *</label>
+              {ta(f)}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Business Description *</label>
-              <textarea
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                value={applicationData.businessDescription}
-                onChange={(e) => handleInputChange('businessDescription', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Financial Information *</label>
-              <textarea
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                value={applicationData.financialInfo}
-                onChange={(e) => handleInputChange('financialInfo', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Use of Funds *</label>
-              <textarea
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                value={applicationData.useOfFunds}
-                onChange={(e) => handleInputChange('useOfFunds', e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="flex justify-end space-x-4">
-            <button
-              onClick={() => setShowNewApplication(false)}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => setStep(2)}
-              className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-            >
-              Preview →
-            </button>
-          </div>
+          ))}
         </div>
-      );
-    }
-    
-    if (step === 2) {
-      return (
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">👀 Preview Application</h3>
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h4 className="font-semibold mb-4">{profile?.business_name} - Funding Application</h4>
-            {Object.entries({
-              'Executive Summary': applicationData.executiveSummary,
-              'Business Description': applicationData.businessDescription,
-              'Financial Information': applicationData.financialInfo,
-              'Use of Funds': applicationData.useOfFunds
-            }).map(([title, content]) => (
-              <div key={title} className="mb-4">
-                <h5 className="font-medium text-gray-900">{title}</h5>
-                <p className="text-gray-700 text-sm mt-1">{content}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between">
-            <button
-              onClick={() => setStep(1)}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              ← Edit
-            </button>
-            <button
-              onClick={() => setStep(3)}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Sign →
-            </button>
-          </div>
+        {btnRow(
+          <button onClick={() => setShowNewApplication(false)} className="btn-secondary">Cancel</button>,
+          <button onClick={() => setStep(2)} style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.625rem 1.25rem', fontWeight: 600, cursor: 'pointer' }}>Preview →</button>
+        )}
+      </div>
+    );
+
+    if (step === 2) return (
+      <div>
+        <h3 style={{ fontWeight: 700, color: '#0a2240', marginBottom: '1.25rem' }}>👀 Preview Application</h3>
+        <div style={{ background: '#f8fafc', borderRadius: '0.5rem', padding: '1.25rem', marginBottom: '1rem' }}>
+          <div style={{ fontWeight: 600, color: '#0a2240', marginBottom: '1rem' }}>{profile?.business_name} — Funding Application</div>
+          {[['Executive Summary', applicationData.executiveSummary], ['Business Description', applicationData.businessDescription], ['Financial Information', applicationData.financialInfo], ['Use of Funds', applicationData.useOfFunds]].map(([t, c]) => (
+            <div key={t} style={{ marginBottom: '0.875rem' }}>
+              <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.875rem' }}>{t}</div>
+              <div style={{ color: '#475569', fontSize: '0.875rem', marginTop: '0.25rem' }}>{c}</div>
+            </div>
+          ))}
         </div>
-      );
-    }
-    
-    if (step === 3) {
-      return (
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">✍️ Digital Signature</h3>
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <p className="text-yellow-800 text-sm">
-              By signing, you confirm all information is accurate and complete.
-            </p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name (Digital Signature) *</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={signature}
-              onChange={(e) => setSignature(e.target.value)}
-              placeholder="Type your full name"
-            />
-          </div>
-          <div className="flex justify-between">
-            <button
-              onClick={() => setStep(2)}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              ← Back
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={!signature.trim() || loading}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-            >
-              {loading ? 'Submitting...' : '🚀 Submit Application'}
-            </button>
-          </div>
+        {btnRow(
+          <button onClick={() => setStep(1)} className="btn-secondary">← Edit</button>,
+          <button onClick={() => setStep(3)} style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.625rem 1.25rem', fontWeight: 600, cursor: 'pointer' }}>Sign & Submit →</button>
+        )}
+      </div>
+    );
+
+    if (step === 3) return (
+      <div>
+        <h3 style={{ fontWeight: 700, color: '#0a2240', marginBottom: '1.25rem' }}>✍️ Digital Signature</h3>
+        <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '0.875rem', marginBottom: '1.25rem', fontSize: '0.875rem', color: '#92400e' }}>
+          By signing, you confirm all information is accurate and complete.
         </div>
-      );
-    }
+        <div style={{ marginBottom: '1.25rem' }}>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>Full Name (Digital Signature) *</label>
+          <input type="text" className="modern-input" placeholder="Type your full name" value={signature} onChange={e => setSignature(e.target.value)} />
+        </div>
+        {btnRow(
+          <button onClick={() => setStep(2)} className="btn-secondary">← Back</button>,
+          <button onClick={handleSubmit} disabled={!signature.trim() || loading}
+            style={{ background: 'linear-gradient(135deg,#1a7a4a,#22a05a)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.625rem 1.25rem', fontWeight: 600, cursor: (!signature.trim() || loading) ? 'not-allowed' : 'pointer', opacity: (!signature.trim() || loading) ? 0.6 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {loading && <span className="loading-spinner" />}
+            {loading ? 'Submitting...' : '🚀 Submit Application'}
+          </button>
+        )}
+      </div>
+    );
   };
 
   if (loading && applications.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200 py-8">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center text-white">
-            <div className="loading-spinner mx-auto mb-4"></div>
-            <p>Loading your applications...</p>
-          </div>
+      <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="loading-spinner" style={{ margin: '0 auto 1rem', borderColor: 'rgba(26,79,138,0.2)', borderTopColor: '#1a4f8a' }} />
+          <p style={{ color: '#64748b' }}>Loading your applications...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">My Applications</h1>
-          <div className="bg-white bg-opacity-20 p-4 rounded-lg flex justify-between items-center">
-            <p className="text-white">Track and manage your funding applications</p>
-            <button
-              onClick={() => setShowNewApplication(true)}
-              className="px-4 py-2 bg-white text-orange-600 rounded-lg hover:bg-gray-100 font-medium"
-            >
-              + New Application
-            </button>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '2rem 1rem' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a2240', marginBottom: '0.25rem' }}>My Applications</h1>
+            <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>Track and manage your government funding applications</p>
           </div>
+          <button
+            onClick={() => setShowNewApplication(true)}
+            style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.625rem 1.25rem', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}
+          >
+            + New Application
+          </button>
         </div>
 
         {showNewApplication && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', padding: '1.5rem', marginBottom: '1.5rem' }}>
             {renderApplicationForm()}
           </div>
         )}
 
         {applications.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="text-6xl mb-4">📋</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Applications Yet</h3>
-            <p className="text-gray-600 mb-4">Create your first funding application to get started.</p>
-            <button
-              onClick={() => setShowNewApplication(true)}
-              className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600"
-            >
-              Create Application
-            </button>
+          <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', padding: '3rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
+            <h3 style={{ fontWeight: 700, color: '#0a2240', marginBottom: '0.5rem' }}>No Applications Yet</h3>
+            <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Find a funding match first, then apply from the Funding Matches page.</p>
+            <a href="/funding-opportunities" style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 600 }}>Find Funding Matches →</a>
           </div>
         ) : (
-          <div className="space-y-6">
-            {applications.map((app) => (
-              <div key={app.id} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-orange-500">
-                <div className="flex justify-between items-start mb-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {applications.map((app) => {
+              const name = app.opportunity_name || app.programme;
+              const provider = app.funding_company || app.provider;
+              const amount = app.amount_requested || app.amount;
+              const score = app.match_score || app.score;
+              const date = app.submission_date || app.submitted;
+              const msg = app.status_message;
+              return (
+              <div key={app.id} style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', padding: '1.5rem', borderLeft: `4px solid ${app.status === 'Approved' ? '#1a7a4a' : app.status === 'Rejected' ? '#dc2626' : app.status === 'Under Review' ? '#c8922a' : '#1a4f8a'}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {app.opportunity_name}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-2">
-                      <strong>Funding Provider:</strong> {app.funding_company}
-                    </p>
-                    <p className="text-gray-600 text-sm">
-                      <strong>Application ID:</strong> {app.id}
-                    </p>
+                    <h3 style={{ fontWeight: 700, color: '#0a2240', fontSize: '1rem', marginBottom: '0.25rem' }}>{name}</h3>
+                    <p style={{ color: '#64748b', fontSize: '0.875rem' }}>{provider} · ID: {app.id}</p>
                   </div>
-                  
-                  <div className={`px-3 py-2 rounded-lg border font-medium ${getStatusColor(app.status)}`}>
+                  <span style={{ padding: '0.3rem 0.875rem', borderRadius: 9999, fontSize: '0.8125rem', fontWeight: 600, background: app.status === 'Approved' ? '#f0fdf4' : app.status === 'Rejected' ? '#fef2f2' : app.status === 'Under Review' ? '#fffbeb' : '#eff6ff', color: app.status === 'Approved' ? '#166534' : app.status === 'Rejected' ? '#991b1b' : app.status === 'Under Review' ? '#92400e' : '#1e40af' }}>
                     {getStatusIcon(app.status)} {app.status}
-                  </div>
+                  </span>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">Amount Requested</p>
-                    <p className="font-semibold text-lg">R{app.amount_requested?.toLocaleString()}</p>
-                    {app.approved_amount && (
-                      <p className="text-sm text-green-600 font-medium">✓ Approved: R{app.approved_amount.toLocaleString()}</p>
-                    )}
-                  </div>
-                  
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">Match Score</p>
-                    <p className="font-semibold text-lg text-green-600">{app.match_score}%</p>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-3 rounded-lg">
-                    <p className="text-sm text-gray-600">Submitted</p>
-                    <p className="font-semibold">{app.submission_date}</p>
-                  </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
+                  {[['Amount', `R${amount?.toLocaleString()}`], ['Match Score', `${score}%`], ['Submitted', date]].map(([l, v]) => (
+                    <div key={l} style={{ background: '#f8fafc', borderRadius: '0.5rem', padding: '0.75rem' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginBottom: '0.25rem' }}>{l}</div>
+                      <div style={{ fontWeight: 700, color: '#0a2240' }}>{v}</div>
+                    </div>
+                  ))}
                 </div>
 
-                {/* Status Message */}
-                <div className={`p-4 rounded-lg mb-4 ${
-                  app.status === 'Approved' ? 'bg-green-50 border border-green-200' :
-                  app.status === 'Under Review' ? 'bg-orange-50 border border-orange-200' :
-                  app.status === 'Rejected' ? 'bg-red-50 border border-red-200' :
-                  'bg-blue-50 border border-blue-200'
-                }`}>
-                  <p className={`text-sm font-medium ${
-                    app.status === 'Approved' ? 'text-green-800' :
-                    app.status === 'Under Review' ? 'text-orange-800' :
-                    app.status === 'Rejected' ? 'text-red-800' :
-                    'text-blue-800'
-                  }`}>
-                    {app.status_message}
-                  </p>
-                  {app.next_steps && (
-                    <p className="text-sm text-green-700 mt-2">
-                      <strong>Next Steps:</strong> {app.next_steps}
-                    </p>
+                {msg && (
+                  <div style={{ padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', background: app.status === 'Approved' ? '#f0fdf4' : app.status === 'Rejected' ? '#fef2f2' : '#f8fafc', border: `1px solid ${app.status === 'Approved' ? '#bbf7d0' : app.status === 'Rejected' ? '#fecaca' : '#e2e8f0'}`, fontSize: '0.875rem', color: app.status === 'Approved' ? '#166534' : app.status === 'Rejected' ? '#991b1b' : '#475569' }}>
+                    {msg}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                  {app.status === 'Approved' ? (
+                    <button style={{ background: '#1a7a4a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}>📄 Download Agreement</button>
+                  ) : app.status === 'Rejected' ? (
+                    <button style={{ background: '#c8922a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}>🔄 Reapply</button>
+                  ) : (
+                    <button style={{ background: '#1a4f8a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}>📧 Contact Provider</button>
                   )}
                 </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-600">
-                    Last updated: {app.last_updated}
-                  </div>
-                  
-                  <div className="flex space-x-3">
-                    <button className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
-                      View Details
-                    </button>
-                    {app.status === 'Approved' ? (
-                      <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                        📄 Download Agreement
-                      </button>
-                    ) : app.status === 'Rejected' ? (
-                      <button className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700">
-                        🔄 Reapply
-                      </button>
-                    ) : (
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                        📧 Contact Provider
-                      </button>
-                    )}
-                  </div>
-                </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
-
-        <div className="mt-8 bg-white bg-opacity-20 p-4 rounded-lg">
-          <h3 className="font-semibold text-white mb-2">Application Status Guide:</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm text-orange-100">
-            <div>
-              <p><span className="font-medium">📄 Submitted:</span> Application received and being processed</p>
-              <p><span className="font-medium">⏳ Under Review:</span> Application is being evaluated by funding team</p>
-            </div>
-            <div>
-              <p><span className="font-medium">✅ Approved:</span> Congratulations! Funding has been approved</p>
-              <p><span className="font-medium">❌ Rejected:</span> Application was not successful this time</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

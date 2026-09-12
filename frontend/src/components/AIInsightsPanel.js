@@ -12,7 +12,7 @@ const AIInsightsPanel = () => {
 
   const fetchAIInsights = async () => {
     try {
-      const response = await fetch('http://localhost:8008/api/admin/ai-insights');
+      const response = await fetch('http://localhost:8001/api/admin/ai-insights');
       const data = await response.json();
       if (data.success) {
         setInsights(data.data);

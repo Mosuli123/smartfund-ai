@@ -1,299 +1,119 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { DocumentIcon, ChartIcon, SettingsIcon, BackgroundPattern } from '../components/Icons';
+
+const DEFAULT_PROGRAMMES = [
+  { id: 'gov-1', title: 'SEDA Technology Programme (STP)', provider: 'Small Enterprise Development Agency', amount: 'R50,000 – R500,000', deadline: '2025-06-30', sectors: ['Technology', 'Manufacturing', 'Agro-processing'], status: 'Active', applications: 34, type: 'National' },
+  { id: 'gov-2', title: 'IDC Industrial Financing', provider: 'Industrial Development Corporation', amount: 'R1,000,000 – R1,000,000,000', deadline: '2025-12-31', sectors: ['Manufacturing', 'Mining', 'Agro-processing', 'Green Economy'], status: 'Active', applications: 18, type: 'National' },
+  { id: 'gov-3', title: 'TIA Innovation Bridge Fund', provider: 'Technology Innovation Agency', amount: 'R100,000 – R5,000,000', deadline: '2025-09-30', sectors: ['Technology', 'Biotechnology', 'ICT', 'Clean Energy'], status: 'Active', applications: 27, type: 'National' },
+  { id: 'gov-4', title: 'DAFF Agro-Processing Support Scheme', provider: 'Dept. of Agriculture, Forestry & Fisheries', amount: 'R75,000 – R750,000', deadline: '2025-07-31', sectors: ['Agriculture', 'Food Processing', 'Aquaculture'], status: 'Active', applications: 15, type: 'National' },
+  { id: 'gov-5', title: 'NEF Iqhaza Lwabisebenzi Fund', provider: 'National Empowerment Fund', amount: 'R250,000 – R75,000,000', deadline: '2025-12-31', sectors: ['Any (BEE-compliant)'], status: 'Active', applications: 22, type: 'National' },
+  { id: 'gov-6', title: 'DBSA Green Economy Fund', provider: 'Development Bank of Southern Africa', amount: 'R500,000 – R500,000,000', deadline: '2025-10-31', sectors: ['Renewable Energy', 'Water', 'Waste Management', 'Green Transport'], status: 'Active', applications: 9, type: 'National' },
+  { id: 'gov-7', title: 'TEP Tourism Enterprise Programme', provider: 'Tourism Enterprise Partnership', amount: 'R10,000 – R200,000', deadline: '2025-08-31', sectors: ['Tourism', 'Hospitality', 'Craft'], status: 'Active', applications: 41, type: 'National' },
+  { id: 'gov-8', title: 'NYDA Youth Business Grant', provider: 'National Youth Development Agency', amount: 'R1,000 – R100,000', deadline: '2025-12-31', sectors: ['Any (18–35 years)'], status: 'Active', applications: 67, type: 'National' },
+];
 
 const ManageOpportunities = () => {
-  const [opportunities, setOpportunities] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const { isDarkMode } = useTheme();
+  const [programmes, setProgrammes] = useState([]);
+  const [filter, setFilter] = useState('All');
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsLoaded(true);
-    loadOpportunities();
+    const custom = JSON.parse(localStorage.getItem('customOpportunities') || '[]');
+    setProgrammes([...DEFAULT_PROGRAMMES, ...custom]);
   }, []);
 
-  const loadOpportunities = () => {
-    // Load custom opportunities from localStorage
-    const customOpportunities = JSON.parse(localStorage.getItem('customOpportunities') || '[]');
-    
-    // Default opportunities
-    const defaultOpportunities = [
-      {
-        id: 'default-1',
-        title: 'Small Business Innovation Grant',
-        description: 'Supporting innovative small businesses in technology and healthcare sectors',
-        amount: 'R50,000 - R500,000',
-        deadline: '2024-03-31',
-        sectors: ['Technology', 'Healthcare', 'Manufacturing'],
-        status: 'Active',
-        applications: 12,
-        type: 'Default'
-      },
-      {
-        id: 'default-2',
-        title: 'Women Entrepreneur Fund',
-        description: 'Empowering women-led businesses across various industries',
-        amount: 'R25,000 - R250,000',
-        deadline: '2024-04-15',
-        sectors: ['Retail', 'Services', 'Agriculture'],
-        status: 'Active',
-        applications: 8,
-        type: 'Default'
-      },
-      {
-        id: 'default-3',
-        title: 'Tech Startup Accelerator',
-        description: 'Fast-track funding for technology startups and fintech companies',
-        amount: 'R100,000 - R1,000,000',
-        deadline: '2024-05-30',
-        sectors: ['Technology', 'Fintech'],
-        status: 'Active',
-        applications: 15,
-        type: 'Default'
-      },
-      {
-        id: 'default-4',
-        title: 'Agricultural Development Fund',
-        description: 'Supporting sustainable agriculture and food processing initiatives',
-        amount: 'R75,000 - R750,000',
-        deadline: '2024-06-15',
-        sectors: ['Agriculture', 'Food Processing'],
-        status: 'Active',
-        applications: 6,
-        type: 'Default'
-      },
-      {
-        id: 'default-5',
-        title: 'Youth Enterprise Scheme',
-        description: 'Funding opportunities for young entrepreneurs under 35',
-        amount: 'R10,000 - R100,000',
-        deadline: '2024-07-31',
-        sectors: ['Any'],
-        status: 'Active',
-        applications: 22,
-        type: 'Default'
-      },
-      {
-        id: 'default-6',
-        title: 'Green Energy Initiative',
-        description: 'Supporting renewable energy and sustainable technology projects',
-        amount: 'R200,000 - R2,000,000',
-        deadline: '2024-08-30',
-        sectors: ['Energy', 'Technology'],
-        status: 'Active',
-        applications: 4,
-        type: 'Default'
-      }
-    ];
+  const filtered = filter === 'All' ? programmes : programmes.filter(p => p.status === filter);
+  const totalApplications = programmes.reduce((s, p) => s + (p.applications || 0), 0);
 
-    setOpportunities([...defaultOpportunities, ...customOpportunities]);
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Active':
-        return isDarkMode ? 'bg-blue-900/50 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Draft':
-        return isDarkMode ? 'bg-orange-900/50 text-orange-300 border-orange-700' : 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'Closed':
-        return isDarkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'bg-gray-100 text-gray-800 border-gray-200';
-      default:
-        return isDarkMode ? 'bg-blue-900/50 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-800 border-blue-200';
-    }
-  };
-
-  const getTotalApplications = () => {
-    return opportunities.reduce((total, opp) => total + (opp.applications || 0), 0);
+  const statusStyle = (status) => {
+    if (status === 'Active') return { background: '#dcfce7', color: '#166534' };
+    if (status === 'Draft') return { background: '#fef9c3', color: '#854d0e' };
+    return { background: '#f1f5f9', color: '#475569' };
   };
 
   return (
-    <BackgroundPattern isDarkMode={isDarkMode}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className={`mb-8 transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-          <h1 className={`text-4xl font-bold mb-4 ${
-            isDarkMode 
-              ? 'bg-gradient-to-r from-blue-400 to-orange-400 bg-clip-text text-transparent'
-              : 'bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent'
-          }`}>
-            Manage Funding Opportunities
-          </h1>
-          <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Overview and management of all funding opportunities
-          </p>
+    <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '2rem 1.5rem' }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0a2240', marginBottom: '0.25rem' }}>Funding Programme Management</h1>
+          <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>Manage national government funding programmes and monitor applications</p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        {/* KPIs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
           {[
-            { label: 'Total Opportunities', value: opportunities.length, icon: DocumentIcon, color: 'blue' },
-            { label: 'Active Opportunities', value: opportunities.filter(o => o.status === 'Active').length, icon: ChartIcon, color: 'orange' },
-            { label: 'Total Applications', value: getTotalApplications(), icon: SettingsIcon, color: 'blue' },
-            { label: 'Custom Created', value: opportunities.filter(o => o.type !== 'Default').length, icon: DocumentIcon, color: 'orange' }
-          ].map((stat, index) => (
-            <div 
-              key={index}
-              className={`backdrop-blur-sm p-6 rounded-2xl shadow-lg border transform transition-all duration-300 hover:scale-105 ${
-                isDarkMode 
-                  ? 'bg-slate-800/90 border-slate-700/50' 
-                  : 'bg-white/90 border-white/20'
-              } ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                    {stat.label}
-                  </p>
-                  <p className={`text-3xl font-bold ${
-                    stat.color === 'blue' 
-                      ? (isDarkMode ? 'text-blue-400' : 'text-blue-600')
-                      : (isDarkMode ? 'text-orange-400' : 'text-orange-600')
-                  }`}>
-                    {stat.value}
-                  </p>
+            { label: 'Total Programmes', value: programmes.length, color: '#1a4f8a' },
+            { label: 'Active', value: programmes.filter(p => p.status === 'Active').length, color: '#166534' },
+            { label: 'Total Applications', value: totalApplications, color: '#0a2240' },
+            { label: 'Custom Added', value: programmes.filter(p => !DEFAULT_PROGRAMMES.find(d => d.id === p.id)).length, color: '#c8922a' },
+          ].map((k, i) => (
+            <div key={i} style={{ background: 'white', borderRadius: '0.625rem', padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', borderLeft: `4px solid ${k.color}` }}>
+              <div style={{ fontSize: '1.875rem', fontWeight: 800, color: k.color }}>{k.value}</div>
+              <div style={{ fontSize: '0.8125rem', color: '#64748b', fontWeight: 500 }}>{k.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Actions + Filter */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {['All', 'Active', 'Draft', 'Closed'].map(f => (
+              <button key={f} onClick={() => setFilter(f)}
+                style={{ padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem',
+                  background: filter === f ? '#0a2240' : 'white', color: filter === f ? 'white' : '#475569',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}>
+                {f}
+              </button>
+            ))}
+          </div>
+          <Link to="/admin/create-opportunity"
+            style={{ background: 'linear-gradient(135deg,#c8922a,#e8a830)', color: 'white', padding: '0.625rem 1.25rem', borderRadius: '0.5rem', textDecoration: 'none', fontWeight: 700, fontSize: '0.875rem' }}>
+            + Add Programme
+          </Link>
+        </div>
+
+        {/* Programmes List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {filtered.map(prog => (
+            <div key={prog.id} style={{ background: 'white', borderRadius: '0.75rem', padding: '1.5rem', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', borderLeft: '4px solid #1a4f8a' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+                    <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#0a2240', margin: 0 }}>{prog.title}</h3>
+                    <span style={{ ...statusStyle(prog.status), padding: '0.2rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600 }}>{prog.status}</span>
+                    <span style={{ background: '#eff6ff', color: '#1a4f8a', padding: '0.2rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600 }}>{prog.type || 'National'}</span>
+                  </div>
+                  <p style={{ color: '#c8922a', fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem' }}>Provider: {prog.provider}</p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', fontSize: '0.8125rem', color: '#475569' }}>
+                    <div><span style={{ fontWeight: 600, color: '#334155' }}>Funding Range:</span> {prog.amount}</div>
+                    <div><span style={{ fontWeight: 600, color: '#334155' }}>Deadline:</span> {prog.deadline}</div>
+                    <div><span style={{ fontWeight: 600, color: '#334155' }}>Applications:</span> <span style={{ color: '#1a4f8a', fontWeight: 700 }}>{prog.applications || 0} received</span></div>
+                  </div>
+                  <div style={{ marginTop: '0.75rem', display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+                    {prog.sectors?.map((s, i) => (
+                      <span key={i} style={{ background: '#f0f4f8', color: '#334155', padding: '0.2rem 0.5rem', borderRadius: '0.375rem', fontSize: '0.75rem', fontWeight: 500 }}>{s}</span>
+                    ))}
+                  </div>
                 </div>
-                <stat.icon className={`w-8 h-8 ${
-                  stat.color === 'blue' 
-                    ? (isDarkMode ? 'text-blue-400' : 'text-blue-600')
-                    : (isDarkMode ? 'text-orange-400' : 'text-orange-600')
-                }`} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: 160 }}>
+                  <button onClick={() => navigate(`/admin/edit-opportunity/${prog.id}`)}
+                    style={{ background: '#1a4f8a', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}>
+                    Edit Programme
+                  </button>
+                  <button onClick={() => navigate(`/admin/review-applications?opportunityId=${prog.id}`)}
+                    style={{ background: prog.applications > 0 ? '#c8922a' : '#e2e8f0', color: prog.applications > 0 ? 'white' : '#94a3b8', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}>
+                    Applications ({prog.applications || 0})
+                  </button>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className={`mb-8 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: '400ms' }}>
-          <div className="flex flex-wrap gap-4">
-            <Link
-              to="/admin/create-opportunity"
-              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transform transition-all duration-200 hover:scale-105 shadow-lg"
-            >
-              Create New Opportunity
-            </Link>
-            <button className="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-6 py-3 rounded-xl font-medium hover:from-orange-700 hover:to-orange-800 transform transition-all duration-200 hover:scale-105 shadow-lg">
-              Export Report
-            </button>
-          </div>
-        </div>
-
-        {/* Opportunities List */}
-        <div className={`backdrop-blur-sm rounded-2xl shadow-xl border ${
-          isDarkMode 
-            ? 'bg-slate-800/90 border-slate-700/50' 
-            : 'bg-white/90 border-white/20'
-        } ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: '600ms' }}>
-          <div className="p-6">
-            <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              All Funding Opportunities
-            </h2>
-            
-            <div className="space-y-4">
-              {opportunities.map((opportunity, index) => (
-                <div 
-                  key={opportunity.id}
-                  className={`p-6 rounded-xl border transition-all duration-200 hover:shadow-lg ${
-                    isDarkMode 
-                      ? 'bg-slate-700/50 border-slate-600 hover:bg-slate-700/70' 
-                      : 'bg-gray-50 border-gray-200 hover:bg-white'
-                  }`}
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {opportunity.title}
-                        </h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(opportunity.status)}`}>
-                          {opportunity.status}
-                        </span>
-                        {opportunity.type === 'Default' && (
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'
-                          }`}>
-                            System Default
-                          </span>
-                        )}
-                      </div>
-                      <p className={`mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {opportunity.description}
-                      </p>
-                      <div className="grid md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                            Funding Amount:
-                          </span>
-                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            {opportunity.amount}
-                          </p>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
-                            Deadline:
-                          </span>
-                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            {opportunity.deadline}
-                          </p>
-                        </div>
-                        <div>
-                          <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                            Applications:
-                          </span>
-                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>
-                            {opportunity.applications || 0} received
-                          </p>
-                        </div>
-                      </div>
-                      <div className="mt-3">
-                        <span className={`font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
-                          Target Sectors:
-                        </span>
-                        <div className="flex flex-wrap gap-2 mt-1">
-                          {opportunity.sectors?.map((sector, idx) => (
-                            <span 
-                              key={idx}
-                              className={`px-2 py-1 rounded-full text-xs ${
-                                isDarkMode ? 'bg-orange-900/50 text-orange-300' : 'bg-orange-100 text-orange-700'
-                              }`}
-                            >
-                              {sector}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2 ml-4">
-                      <button 
-                        onClick={() => navigate(`/admin/edit-opportunity/${opportunity.id}`)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                          isDarkMode 
-                            ? 'bg-blue-700 hover:bg-blue-600 text-white' 
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => navigate(`/admin/review-applications?opportunityId=${opportunity.id}`)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                          isDarkMode 
-                            ? 'bg-orange-700 hover:bg-orange-600 text-white' 
-                            : 'bg-orange-600 hover:bg-orange-700 text-white'
-                        }`}
-                      >
-                        View Applications ({opportunity.applications || 0})
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
-    </BackgroundPattern>
+    </div>
   );
 };
 

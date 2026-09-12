@@ -21,8 +21,8 @@ const ApplicationStatus = () => {
       const sampleApps = [
         {
           id: 'APP-2024-001',
-          opportunity_name: 'ELIDZ Manufacturing Excellence Grant',
-          funding_company: 'East London Industrial Development Zone',
+          opportunity_name: 'IDC Manufacturing Competitiveness Fund',
+          funding_company: 'Industrial Development Corporation (IDC)',
           amount_requested: 750000,
           approved_amount: 750000,
           status: 'Approved',
@@ -31,7 +31,7 @@ const ApplicationStatus = () => {
           approval_date: '2024-01-28',
           last_updated: '2024-01-28',
           match_score: 92,
-          contact_email: 'funding@elidz.co.za',
+          contact_email: 'callcentre@idc.co.za',
           next_steps: 'Funding agreement will be sent within 5 business days. Please prepare required documentation.',
           timeline: [
             { date: '2024-01-15', status: 'Submitted', description: 'Application submitted successfully' },
@@ -42,15 +42,15 @@ const ApplicationStatus = () => {
         },
         {
           id: 'APP-2024-002',
-          opportunity_name: 'ICT Innovation Accelerator',
-          funding_company: 'Technology Innovation Agency',
+          opportunity_name: 'TIA Technology Innovation Fund',
+          funding_company: 'Technology Innovation Agency (TIA)',
           amount_requested: 500000,
           status: 'Under Review',
           status_message: 'Your application is currently being reviewed by our technical evaluation team.',
           submission_date: '2024-01-20',
           last_updated: '2024-01-25',
           match_score: 87,
-          contact_email: 'funding@tia.org.za',
+          contact_email: 'info@tia.org.za',
           timeline: [
             { date: '2024-01-20', status: 'Submitted', description: 'Application submitted successfully' },
             { date: '2024-01-22', status: 'Document Verification', description: 'All required documents verified' },
@@ -59,15 +59,15 @@ const ApplicationStatus = () => {
         },
         {
           id: 'APP-2024-003',
-          opportunity_name: 'Smart Agriculture Technology Fund',
-          funding_company: 'East London Industrial Development Zone',
+          opportunity_name: 'DAFF Agricultural Development Grant',
+          funding_company: 'Department of Agriculture, Land Reform and Rural Development',
           amount_requested: 300000,
           status: 'Submitted',
           status_message: 'Application received and queued for initial review.',
           submission_date: '2024-01-25',
           last_updated: '2024-01-25',
           match_score: 78,
-          contact_email: 'agritech@elidz.co.za',
+          contact_email: 'info@dalrrd.gov.za',
           timeline: [
             { date: '2024-01-25', status: 'Submitted', description: 'Application submitted successfully' }
           ]

@@ -7,6 +7,8 @@ import AdminNavbar from './components/AdminNavbar';
 import ElidzAdminNavbar from './components/ElidzAdminNavbar';
 
 import AdminLogin from './pages/AdminLogin';
+import GovLogin from './pages/GovLogin';
+import GovDashboard from './pages/GovDashboard';
 import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
@@ -50,6 +52,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [admin, setAdmin] = useState(null);
   const [elizAdmin, setElidzAdmin] = useState(null);
+  const [isGovAuthenticated, setIsGovAuthenticated] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   useEffect(() => {
@@ -69,13 +72,17 @@ function App() {
       setAdmin(JSON.parse(adminData));
     }
     
-    // Check if ELIDZ admin is already logged in
+    // Check if SITA admin is already logged in
     const elizAdminToken = localStorage.getItem('elizAdminToken');
     const elizAdminData = localStorage.getItem('elizAdmin');
     if (elizAdminToken && elizAdminData) {
       setIsElidzAdminAuthenticated(true);
       setElidzAdmin(JSON.parse(elizAdminData));
     }
+
+    // Check if gov user is already logged in
+    const govToken = localStorage.getItem('govToken');
+    if (govToken) setIsGovAuthenticated(true);
   }, []);
 
   const handleLogin = (userData) => {
@@ -131,6 +138,24 @@ function App() {
         <Routes>
 
           
+          <Route
+            path="/gov/login"
+            element={
+              !isGovAuthenticated ?
+              <GovLogin onGovLogin={() => setIsGovAuthenticated(true)} /> :
+              <Navigate to="/gov/dashboard" replace />
+            }
+          />
+
+          <Route
+            path="/gov/dashboard"
+            element={
+              isGovAuthenticated ?
+              <GovDashboard /> :
+              <Navigate to="/gov/login" replace />
+            }
+          />
+
           <Route 
             path="/smme/login" 
             element={
@@ -249,83 +274,83 @@ function App() {
           />
           
           <Route 
-            path="/elidz-admin/login" 
+            path="/sita-admin/login" 
             element={
               !isElidzAdminAuthenticated ? 
               <ElidzAdminLogin onElidzAdminLogin={handleElidzAdminLogin} /> : 
-              <Navigate to="/elidz-admin/dashboard" replace />
+              <Navigate to="/sita-admin/dashboard" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/dashboard" 
+            path="/sita-admin/dashboard" 
             element={
               isElidzAdminAuthenticated ? 
               <ElidzAdminDashboard admin={elizAdmin} /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/user-management" 
+            path="/sita-admin/user-management" 
             element={
               isElidzAdminAuthenticated ? 
               <UserManagement /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/approve-users" 
+            path="/sita-admin/approve-users" 
             element={
               isElidzAdminAuthenticated ? 
               <ApproveUsers /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/funding-admins" 
+            path="/sita-admin/funding-admins" 
             element={
               isElidzAdminAuthenticated ? 
               <FundingAdminManagement /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/analytics" 
+            path="/sita-admin/analytics" 
             element={
               isElidzAdminAuthenticated ? 
               <SystemAnalytics /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/reports" 
+            path="/sita-admin/reports" 
             element={
               isElidzAdminAuthenticated ? 
               <SystemReports /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/system-config" 
+            path="/sita-admin/system-config" 
             element={
               isElidzAdminAuthenticated ? 
               <SystemConfiguration /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           
           <Route 
-            path="/elidz-admin/security" 
+            path="/sita-admin/security" 
             element={
               isElidzAdminAuthenticated ? 
               <SecuritySettings /> : 
-              <Navigate to="/elidz-admin/login" replace />
+              <Navigate to="/sita-admin/login" replace />
             } 
           />
           

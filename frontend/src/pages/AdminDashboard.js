@@ -1,248 +1,159 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChartIcon, DocumentIcon, TargetIcon, UserIcon } from '../components/Icons';
-import AIFundingInsights from '../components/AIFundingInsights';
+import { getApplications, getAdminStats } from '../services/applicationStore';
+
+const GOV_PROGRAMMES = {
+  'funding_admin': { org: 'Department of Small Business Development (DSBD)', programmes: ['SEDA Grant', 'BBSDP', 'Co-operative Incentive Scheme'] },
+  'programme_mgr': { org: 'Small Enterprise Development Agency (SEDA)', programmes: ['Seda Technology Programme', 'Business Development Support', 'Incubation Support'] },
+  'sita_admin': { org: 'State Information Technology Agency (SITA)', programmes: ['GovTech Innovation Fund', 'Digital Transformation Grant'] },
+  'default': { org: 'Government Funding Programme', programmes: ['National SMME Fund'] }
+};
 
 const AdminDashboard = ({ admin }) => {
-  const [stats, setStats] = useState({
-    totalOpportunities: 0,
-    activeOpportunities: 0,
-    totalApplications: 0,
-    pendingApplications: 0,
-    totalFunding: 0,
-    approvedApplications: 0
-  });
-
-  const [recentActivity, setRecentActivity] = useState([]);
+  const [stats, setStats] = useState({ totalProgrammes: 0, activeApplications: 0, pendingReview: 0, totalDisbursed: 0, approvedThisMonth: 0, rejectedThisMonth: 0 });
+  const [recentApplications, setRecentApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const providerInfo = GOV_PROGRAMMES[admin?.username] || GOV_PROGRAMMES['default'];
+
   useEffect(() => {
-    loadDashboardData();
+    const customOpportunities = JSON.parse(localStorage.getItem('customOpportunities') || '[]');
+    const s = getAdminStats();
+    setStats({
+      totalProgrammes: customOpportunities.length + 8,
+      activeApplications: s.total,
+      pendingReview: s.pending + s.underReview,
+      totalDisbursed: 34700000,
+      approvedThisMonth: s.approved,
+      rejectedThisMonth: s.rejected,
+    });
+    const all = getApplications();
+    setRecentApplications(
+      [...all].sort((a, b) => new Date(b.submitted || b.submission_date) - new Date(a.submitted || a.submission_date)).slice(0, 5)
+    );
+    setLoading(false);
   }, []);
 
-  const loadDashboardData = () => {
-    const opportunities = JSON.parse(localStorage.getItem('customOpportunities') || '[]');
-    const applications = JSON.parse(localStorage.getItem('submittedApplications') || '[]');
-    
-    // Calculate total funding amount
-    const totalFunding = opportunities.reduce((sum, op) => sum + (op.maxAmount || 0), 0) + 6850000; // Include default opportunities
-    
-    setStats({
-      totalOpportunities: opportunities.length + 6,
-      activeOpportunities: opportunities.filter(op => op.status === 'Active').length + 6,
-      totalApplications: applications.length + 23, // Add some demo data
-      pendingApplications: applications.filter(app => app.status === 'Pending').length + 8,
-      totalFunding: totalFunding,
-      approvedApplications: applications.filter(app => app.status === 'Approved').length + 15
-    });
-
-    // Generate recent activity
-    setRecentActivity([
-      { type: 'application', title: 'New application received', company: 'Tech Innovations Ltd', time: '2 hours ago', status: 'new' },
-      { type: 'approval', title: 'Application approved', company: 'Green Energy Solutions', time: '1 day ago', status: 'approved' },
-      { type: 'opportunity', title: 'New opportunity created', company: 'Youth Development Fund', time: '2 days ago', status: 'created' },
-      { type: 'review', title: 'Application under review', company: 'Smart Manufacturing Co', time: '3 days ago', status: 'review' },
-      { type: 'rejection', title: 'Application declined', company: 'Basic Services Ltd', time: '4 days ago', status: 'declined' }
-    ]);
-    
-    setLoading(false);
+  const statusStyle = (status) => {
+    if (status === 'Approved') return { background: '#dcfce7', color: '#166534' };
+    if (status === 'Under Review') return { background: '#dbeafe', color: '#1e40af' };
+    if (status === 'Rejected') return { background: '#fee2e2', color: '#991b1b' };
+    return { background: '#fef9c3', color: '#854d0e' };
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="text-center mt-4 text-gray-600">Loading dashboard...</p>
-        </div>
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div className="loading-spinner" style={{ width: 40, height: 40, margin: '0 auto 1rem' }} />
+        <p style={{ color: '#64748b' }}>Loading dashboard...</p>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-200 to-blue-200 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Header Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-4xl font-bold text-white">Admin Dashboard</h1>
-            <div className="bg-white bg-opacity-20 px-4 py-2 rounded-lg">
-              <span className="text-white font-medium">Welcome, {admin?.username || 'Admin'}</span>
+    <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '2rem 1.5rem' }}>
+
+        {/* Header */}
+        <div style={{ background: 'linear-gradient(135deg, #0a2240 0%, #1a4f8a 100%)', borderRadius: '0.75rem', padding: '1.5rem 2rem', marginBottom: '2rem', borderBottom: '3px solid #c8922a' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <h1 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>
+                Funding Programme Administration
+              </h1>
+              <p style={{ color: '#93c5fd', fontSize: '0.9375rem' }}>{providerInfo.org}</p>
+              <p style={{ color: '#c8922a', fontSize: '0.8125rem', marginTop: '0.25rem', fontWeight: 600 }}>
+                Active Programmes: {providerInfo.programmes.join(' • ')}
+              </p>
             </div>
-          </div>
-          <div className="bg-white bg-opacity-20 p-6 rounded-lg backdrop-blur-sm">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <h3 className="font-semibold text-white text-lg">{admin?.companyName || 'SmartFund AI Admin'}</h3>
-                <p className="text-orange-100 text-sm">Role: Funding Administrator</p>
-              </div>
-              <div>
-                <p className="text-orange-100 text-sm">Industry: {admin?.industry || 'Financial Services'}</p>
-                <p className="text-orange-100 text-sm">Focus: {admin?.focusAreas?.join(', ') || 'SMME Development'}</p>
-              </div>
-              <div>
-                <p className="text-orange-100 text-sm">Contact: {admin?.contactEmail || 'admin@smartfundai.co.za'}</p>
-                <p className="text-orange-100 text-sm">Last Login: {new Date().toLocaleDateString()}</p>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ color: 'white', fontWeight: 600 }}>Welcome, {admin?.username || 'Admin'}</div>
+              <div style={{ color: '#93c5fd', fontSize: '0.8125rem' }}>Last login: {new Date().toLocaleDateString('en-ZA')}</div>
+              <div style={{ marginTop: '0.5rem', display: 'inline-block', background: '#c8922a', color: 'white', fontSize: '0.75rem', fontWeight: 700, padding: '0.25rem 0.75rem', borderRadius: '9999px' }}>
+                FUNDING PROVIDER
               </div>
             </div>
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Opportunities</h3>
-                <p className="text-3xl font-bold text-blue-600 mt-2">{stats.totalOpportunities}</p>
-                <p className="text-sm text-green-600 mt-1">+12% from last month</p>
-              </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <TargetIcon className="w-8 h-8 text-blue-600" />
-              </div>
+        {/* KPI Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+          {[
+            { label: 'Active Programmes', value: stats.totalProgrammes, color: '#1a4f8a', bg: '#eff6ff', icon: '📋' },
+            { label: 'Total Applications', value: stats.activeApplications, color: '#0a2240', bg: '#f0f4f8', icon: '📄' },
+            { label: 'Pending Review', value: stats.pendingReview, color: '#b45309', bg: '#fffbeb', icon: '⏳' },
+            { label: 'Approved This Month', value: stats.approvedThisMonth, color: '#166534', bg: '#f0fdf4', icon: '✅' },
+            { label: 'Total Disbursed', value: `R${(stats.totalDisbursed / 1000000).toFixed(1)}M`, color: '#1a7a4a', bg: '#f0fdf4', icon: '💰' },
+            { label: 'Declined This Month', value: stats.rejectedThisMonth, color: '#991b1b', bg: '#fef2f2', icon: '❌' },
+          ].map((kpi, i) => (
+            <div key={i} style={{ background: 'white', borderRadius: '0.75rem', padding: '1.25rem', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', borderTop: `3px solid ${kpi.color}` }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{kpi.icon}</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: kpi.color }}>{kpi.value}</div>
+              <div style={{ fontSize: '0.8125rem', color: '#64748b', fontWeight: 500 }}>{kpi.label}</div>
             </div>
-          </div>
+          ))}
+        </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Applications</h3>
-                <p className="text-3xl font-bold text-orange-600 mt-2">{stats.totalApplications}</p>
-                <p className="text-sm text-green-600 mt-1">+8% from last month</p>
-              </div>
-              <div className="bg-orange-100 p-3 rounded-full">
-                <DocumentIcon className="w-8 h-8 text-orange-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Pending Review</h3>
-                <p className="text-3xl font-bold text-yellow-600 mt-2">{stats.pendingApplications}</p>
-                <p className="text-sm text-yellow-600 mt-1">Requires attention</p>
-              </div>
-              <div className="bg-yellow-100 p-3 rounded-full">
-                <UserIcon className="w-8 h-8 text-yellow-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Funding</h3>
-                <p className="text-3xl font-bold text-green-600 mt-2">R{(stats.totalFunding / 1000000).toFixed(1)}M</p>
-                <p className="text-sm text-green-600 mt-1">Available funding</p>
-              </div>
-              <div className="bg-green-100 p-3 rounded-full">
-                <ChartIcon className="w-8 h-8 text-green-600" />
-              </div>
-            </div>
+        {/* Quick Actions */}
+        <div style={{ background: 'white', borderRadius: '0.75rem', padding: '1.5rem', marginBottom: '2rem', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0a2240', marginBottom: '1rem' }}>Programme Management</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            {[
+              { label: '+ Create Programme', desc: 'Add new funding opportunity', to: '/admin/create-opportunity', bg: 'linear-gradient(135deg,#0a2240,#1a4f8a)' },
+              { label: '📋 Manage Programmes', desc: 'Edit & monitor opportunities', to: '/admin/manage-opportunities', bg: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)' },
+              { label: '📥 Review Applications', desc: `${stats.pendingReview} awaiting decision`, to: '/admin/review-applications', bg: 'linear-gradient(135deg,#c8922a,#e8a830)' },
+              { label: '📊 Reports & Analytics', desc: 'Programme performance data', to: '/admin/reports', bg: 'linear-gradient(135deg,#1a7a4a,#22a05a)' },
+            ].map((action, i) => (
+              <Link key={i} to={action.to} style={{ background: action.bg, color: 'white', borderRadius: '0.625rem', padding: '1.25rem', textDecoration: 'none', display: 'block', transition: 'opacity 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{action.label}</div>
+                <div style={{ fontSize: '0.8125rem', opacity: 0.85 }}>{action.desc}</div>
+              </Link>
+            ))}
           </div>
         </div>
 
-        {/* AI Funding Intelligence */}
-        <div className="mb-8">
-          <AIFundingInsights />
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Quick Actions */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900">Quick Actions</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <Link
-                  to="/admin/create-opportunity"
-                  className="group p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105 shadow-lg"
-                >
-                  <div className="flex items-center">
-                    <TargetIcon className="w-8 h-8 mr-3" />
-                    <div>
-                      <h3 className="font-semibold">Create Opportunity</h3>
-                      <p className="text-sm opacity-90">Add new funding opportunity</p>
-                    </div>
-                  </div>
-                </Link>
-                
-                <Link
-                  to="/admin/manage-opportunities"
-                  className="group p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all transform hover:scale-105 shadow-lg"
-                >
-                  <div className="flex items-center">
-                    <ChartIcon className="w-8 h-8 mr-3" />
-                    <div>
-                      <h3 className="font-semibold">Manage Opportunities</h3>
-                      <p className="text-sm opacity-90">Edit existing opportunities</p>
-                    </div>
-                  </div>
-                </Link>
-                
-                <Link
-                  to="/admin/review-applications"
-                  className="group p-6 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all transform hover:scale-105 shadow-lg"
-                >
-                  <div className="flex items-center">
-                    <DocumentIcon className="w-8 h-8 mr-3" />
-                    <div>
-                      <h3 className="font-semibold">Review Applications</h3>
-                      <p className="text-sm opacity-90">{stats.pendingApplications} pending review</p>
-                    </div>
-                  </div>
-                </Link>
-                
-                <Link
-                  to="/admin/reports"
-                  className="group p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg"
-                >
-                  <div className="flex items-center">
-                    <UserIcon className="w-8 h-8 mr-3" />
-                    <div>
-                      <h3 className="font-semibold">Generate Reports</h3>
-                      <p className="text-sm opacity-90">Analytics and insights</p>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
+        {/* Recent Applications Table */}
+        <div style={{ background: 'white', borderRadius: '0.75rem', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', overflow: 'hidden' }}>
+          <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#0a2240' }}>Recent Applications</h2>
+            <Link to="/admin/review-applications" style={{ color: '#1a4f8a', fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none' }}>
+              View all →
+            </Link>
           </div>
-
-          {/* Recent Activity */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-bold mb-6 text-gray-900">Recent Activity</h2>
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => (
-                  <div key={index} className="flex items-start p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className={`w-3 h-3 rounded-full mt-2 mr-3 ${
-                      activity.status === 'new' ? 'bg-blue-500' :
-                      activity.status === 'approved' ? 'bg-green-500' :
-                      activity.status === 'created' ? 'bg-orange-500' :
-                      activity.status === 'review' ? 'bg-yellow-500' :
-                      'bg-red-500'
-                    }`}></div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{activity.title}</p>
-                      <p className="text-sm text-gray-600">{activity.company}</p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc' }}>
+                  {['Company', 'Programme', 'Amount Requested', 'AI Score', 'Status', 'Submitted', 'Action'].map(h => (
+                    <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentApplications.map((app, i) => (
+                  <tr key={app.id} style={{ borderTop: '1px solid #f1f5f9', background: i % 2 === 0 ? 'white' : '#fafafa' }}>
+                    <td style={{ padding: '0.875rem 1rem', fontWeight: 600, color: '#1e293b', fontSize: '0.875rem' }}>{app.company}</td>
+                    <td style={{ padding: '0.875rem 1rem', color: '#475569', fontSize: '0.8125rem' }}>{app.programme || app.opportunity_name}</td>
+                    <td style={{ padding: '0.875rem 1rem', fontWeight: 700, color: '#0a2240', fontSize: '0.875rem' }}>R{(app.amount || app.amount_requested)?.toLocaleString()}</td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <span style={{ fontWeight: 700, color: (app.score || app.match_score) >= 85 ? '#166534' : (app.score || app.match_score) >= 70 ? '#b45309' : '#991b1b', fontSize: '0.875rem' }}>{app.score || app.match_score}%</span>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <span style={{ ...statusStyle(app.status), padding: '0.25rem 0.625rem', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 600 }}>{app.status}</span>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem', color: '#64748b', fontSize: '0.8125rem' }}>{app.submitted}</td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <Link to="/admin/review-applications" style={{ color: '#1a4f8a', fontSize: '0.8125rem', fontWeight: 600, textDecoration: 'none' }}>Review</Link>
+                    </td>
+                  </tr>
                 ))}
-              </div>
-              <div className="mt-6">
-                <Link 
-                  to="/admin/reports" 
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                >
-                  View all activity →
-                </Link>
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
         </div>
+
       </div>
     </div>
   );

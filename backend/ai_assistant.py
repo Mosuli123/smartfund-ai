@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 class FundingAIAssistant:
     def __init__(self):
@@ -33,7 +33,7 @@ class FundingAIAssistant:
             }
         ]
     
-    def analyze_user_query(self, query: str, user_profile: Dict = None) -> str:
+    def analyze_user_query(self, query: str, user_profile: Optional[Dict] = None) -> str:
         """Analyze user query and generate appropriate response"""
         query_lower = query.lower()
         
@@ -57,7 +57,7 @@ class FundingAIAssistant:
         else:
             return self.get_general_response(user_profile)
     
-    def get_criteria_response(self, user_profile: Dict = None) -> str:
+    def get_criteria_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate response about funding criteria"""
         response = "Here are the key funding criteria across available opportunities:\n\n"
         response += "**Universal Requirements:**\n"
@@ -88,7 +88,7 @@ class FundingAIAssistant:
         
         return response
     
-    def get_eligibility_response(self, user_profile: Dict = None) -> str:
+    def get_eligibility_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate eligibility assessment response"""
         if not user_profile:
             return "To provide an accurate eligibility assessment, I need your business profile information. Please complete your profile first."
@@ -133,7 +133,7 @@ class FundingAIAssistant:
         
         return min(score, 100)
     
-    def get_application_process_response(self, user_profile: Dict = None) -> str:
+    def get_application_process_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate application process guidance"""
         response = "Here's your step-by-step funding application process:\n\n"
         response += "**Phase 1: Preparation**\n"
@@ -190,7 +190,7 @@ class FundingAIAssistant:
 
 💡 **Pro Tip:** Start gathering these documents early. Our system can help generate some templates through the application draft feature."""
     
-    def get_success_tips_response(self, user_profile: Dict = None) -> str:
+    def get_success_tips_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate success tips response"""
         response = "Here are proven strategies for funding success:\n\n"
         response += "**Application Excellence:**\n"
@@ -220,7 +220,7 @@ class FundingAIAssistant:
         
         return response
     
-    def get_funding_amount_response(self, user_profile: Dict = None) -> str:
+    def get_funding_amount_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate funding amount guidance"""
         if user_profile and user_profile.get('fundingAmount'):
             amount = user_profile['fundingAmount']
@@ -252,7 +252,7 @@ class FundingAIAssistant:
         
         return response
     
-    def get_general_response(self, user_profile: Dict = None) -> str:
+    def get_general_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate general helpful response"""
         responses = [
             "I'm here to help with your funding journey! I can assist with:\n\n• Funding criteria and requirements\n• Eligibility assessments\n• Application process guidance\n• Document preparation\n• Success strategies\n\nWhat specific aspect would you like to explore?",
@@ -268,7 +268,7 @@ class FundingAIAssistant:
         
         return base_response
     
-    def get_opportunities_response(self, user_profile: Dict = None) -> str:
+    def get_opportunities_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate response about available funding opportunities"""
         response = "Here are the current funding opportunities available:\n\n"
         
@@ -286,7 +286,7 @@ class FundingAIAssistant:
         
         return response
     
-    def get_timeline_response(self, user_profile: Dict = None) -> str:
+    def get_timeline_response(self, user_profile: Optional[Dict] = None) -> str:
         """Generate response about funding timelines"""
         response = "Here's the typical funding timeline:\n\n"
         response += "**Application Phase (2-4 weeks):**\n"

@@ -111,7 +111,7 @@ const SystemReports = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `elidz-system-report-${new Date().toISOString().split('T')[0]}.${format}`;
+    a.download = `govtech-system-report-${new Date().toISOString().split('T')[0]}.${format}`;
     a.click();
   };
 
@@ -644,7 +644,7 @@ const SystemReports = () => {
           <div className="space-y-4">
             <div className="border-l-4 border-blue-500 pl-4">
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-gray-900">ELIDZ Development Fund</span>
+                <span className="font-medium text-gray-900">SEDA Development Fund</span>
                 <span className="text-lg font-bold text-blue-600">R12.3M</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">

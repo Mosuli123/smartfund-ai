@@ -1,214 +1,97 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../components/Logo';
-import { UserIcon, SecurityIcon } from '../components/Icons';
+
+const ADMIN_ACCOUNTS = {
+  'funding_admin': { password: 'admin2026', companyName: 'Department of Small Business Development', industry: 'Government', focusAreas: ['SMME Development', 'Funding Administration'], contactEmail: 'admin@dsbd.gov.za' },
+  'programme_mgr': { password: 'prog2026', companyName: 'Small Enterprise Development Agency (SEDA)', industry: 'Government', focusAreas: ['Programme Management', 'SMME Support'], contactEmail: 'programmes@seda.org.za' },
+  'sita_admin': { password: 'sita2026', companyName: 'SITA GovTech (System Admin)', industry: 'Government Technology', focusAreas: ['Digital Government', 'SMME Enablement'], contactEmail: 'admin@sita.co.za' },
+};
 
 const AdminLogin = ({ onAdminLogin }) => {
-  const [credentials, setCredentials] = useState({
-    username: 'elidz_admin',
-    password: 'elidz123'
-  });
+  const [credentials, setCredentials] = useState({ username: 'funding_admin', password: 'admin2026' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Mock funding companies database
-  const fundingCompanies = {
-    'elidz_admin': {
-      password: 'elidz123',
-      companyName: 'East London Industrial Development Zone (ELIDZ)',
-      industry: 'Industrial Development',
-      focusAreas: ['Manufacturing', 'Automotive', 'Agriculture'],
-      contactEmail: 'funding@elidz.co.za'
-    },
-    'automotive_admin': {
-      password: 'auto123',
-      companyName: 'Automotive Industry Development Centre (AIDC)',
-      industry: 'Automotive Development',
-      focusAreas: ['Automotive', 'Manufacturing'],
-      contactEmail: 'funding@aidc.co.za'
-    },
-    'tech_admin': {
-      password: 'tech123',
-      companyName: 'Technology Innovation Agency (TIA)',
-      industry: 'Technology Development',
-      focusAreas: ['ICT and Electronics', 'Renewable Energy'],
-      contactEmail: 'funding@tia.org.za'
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     setTimeout(() => {
-      // Check registered admins first
-      const adminCredentials = JSON.parse(localStorage.getItem('adminCredentials') || '{}');
-      
-      if (adminCredentials[credentials.username] && 
-          adminCredentials[credentials.username].password === credentials.password) {
-        const adminData = {
-          user_id: credentials.username,
-          username: credentials.username,
-          role: 'admin',
-          fullName: adminCredentials[credentials.username].fullName,
-          email: adminCredentials[credentials.username].email,
-          token: 'admin_token_' + Date.now()
-        };
-        onAdminLogin(adminData);
+      const stored = JSON.parse(localStorage.getItem('adminCredentials') || '{}');
+      const storedUser = stored[credentials.username];
+      const builtIn = ADMIN_ACCOUNTS[credentials.username];
+
+      if (storedUser && storedUser.password === credentials.password) {
+        onAdminLogin({ user_id: credentials.username, username: credentials.username, role: 'admin', fullName: storedUser.fullName, email: storedUser.email, token: 'admin_token_' + Date.now() });
+      } else if (builtIn && builtIn.password === credentials.password) {
+        onAdminLogin({ user_id: credentials.username, username: credentials.username, role: 'admin', companyName: builtIn.companyName, industry: builtIn.industry, focusAreas: builtIn.focusAreas, contactEmail: builtIn.contactEmail, token: 'admin_token_' + Date.now() });
       } else {
-        // Fallback to predefined funding companies
-        const company = fundingCompanies[credentials.username];
-        if (company && company.password === credentials.password) {
-          const adminData = {
-            user_id: credentials.username,
-            username: credentials.username,
-            role: 'admin',
-            companyName: company.companyName,
-            industry: company.industry,
-            focusAreas: company.focusAreas,
-            contactEmail: company.contactEmail,
-            token: 'admin_token_' + Date.now()
-          };
-          onAdminLogin(adminData);
-        } else {
-          setError('Invalid admin credentials');
-        }
+        setError('Invalid credentials.');
       }
       setLoading(false);
-    }, 1000);
+    }, 900);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{background: 'linear-gradient(135deg, #fef7f0 0%, #f0f4f8 100%)'}}>
-      <div className="max-w-md w-full">
-        {/* Modern Header */}
-        <div className="text-center mb-8">
-          <Logo className="h-16 mx-auto mb-6" />
-          <h1 className="heading-1" style={{color: '#1e3a5f'}}>Admin Portal</h1>
-          <p className="text-lg" style={{color: '#64748b'}}>Funding Management System</p>
-        </div>
-
-        {/* Modern Login Card */}
-        <div className="modern-card p-8">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{background: 'linear-gradient(135deg, #e67e22 0%, #d35400 100%)'}}>
-              <SecurityIcon className="w-8 h-8 text-white" />
+    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
+      <header style={{ background: '#0a2240', borderBottom: '3px solid #c8922a', padding: '0 1.5rem' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', height: '4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg,#c8922a,#e8a830)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: 800, fontSize: '0.875rem' }}>A</span>
             </div>
-            <h2 className="heading-2" style={{color: '#1e3a5f'}}>Administrator Login</h2>
-            <p className="text-lg" style={{color: '#64748b'}}>Access your funding management dashboard</p>
+            <div>
+              <div style={{ color: 'white', fontWeight: 700, fontSize: '0.875rem' }}>Funding Programme Administration</div>
+              <div style={{ color: '#c8922a', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Government Funding Intelligence & Access Platform</div>
+            </div>
           </div>
-        
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-5 h-5 text-red-500 mr-2">⚠</div>
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
+          <Link to="/" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', textDecoration: 'none' }}>← Back</Link>
+        </div>
+      </header>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 4rem)', padding: '2rem 1rem' }}>
+        <div style={{ width: '100%', maxWidth: 420 }}>
+          <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 16px rgba(10,34,64,0.08)', padding: '2.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <div style={{ width: 56, height: 56, background: 'linear-gradient(135deg,#c8922a,#e8a830)', borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                <svg width="24" height="24" fill="none" stroke="white" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
               </div>
-            )}
-            
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Admin Username
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <UserIcon className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    required
-                    className="modern-input pl-10"
-                    placeholder="Enter admin username"
-                    value={credentials.username}
-                    onChange={(e) => setCredentials({...credentials, username: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <SecurityIcon className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    className="modern-input pl-10"
-                    placeholder="Enter password"
-                    value={credentials.password}
-                    onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-                  />
-                </div>
-              </div>
+              <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a2240', marginBottom: '0.375rem' }}>Programme Admin Login</h1>
+              <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>Manage funding programmes and review applications</p>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-3 disabled:opacity-50"
-            >
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Signing In...
-                </div>
-              ) : (
-                'Access Admin Dashboard'
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {error && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.5rem', padding: '0.875rem', color: '#991b1b', fontSize: '0.875rem' }}>{error}</div>
               )}
-            </button>
-          
-          </form>
-          
-          {/* Demo Credentials */}
-          <div className="mt-8 space-y-4">
-            <div className="p-4 rounded-xl border" style={{background: 'rgba(65, 128, 190, 0.1)', borderColor: '#4180be'}}>
-              <div className="flex items-center mb-3">
-                <div className="w-4 h-4 mr-2" style={{color: '#4180be'}}>ℹ</div>
-                <p className="text-sm font-semibold" style={{color: '#2d4a6b'}}>Demo Admin Accounts</p>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>Username</label>
+                <input type="text" required className="modern-input" value={credentials.username}
+                  onChange={e => setCredentials({ ...credentials, username: e.target.value })} />
               </div>
-              <div className="text-xs space-y-2" style={{color: '#334155'}}>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <p className="font-medium">ELIDZ Admin:</p>
-                    <code className="px-2 py-1 rounded text-xs block" style={{background: 'rgba(65, 128, 190, 0.2)'}}>elidz_admin</code>
-                    <code className="px-2 py-1 rounded text-xs block mt-1" style={{background: 'rgba(65, 128, 190, 0.2)'}}>elidz123</code>
-                  </div>
-                  <div>
-                    <p className="font-medium">Tech Admin:</p>
-                    <code className="px-2 py-1 rounded text-xs block" style={{background: 'rgba(65, 128, 190, 0.2)'}}>tech_admin</code>
-                    <code className="px-2 py-1 rounded text-xs block mt-1" style={{background: 'rgba(65, 128, 190, 0.2)'}}>tech123</code>
-                  </div>
-                </div>
-                <p className="font-medium text-center pt-2 border-t" style={{color: '#e67e22', borderColor: 'rgba(65, 128, 190, 0.3)'}}>ELIDZ Hackathon Partners</p>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>Password</label>
+                <input type="password" required className="modern-input" value={credentials.password}
+                  onChange={e => setCredentials({ ...credentials, password: e.target.value })} />
               </div>
+              <button type="submit" disabled={loading}
+                style={{ background: 'linear-gradient(135deg,#c8922a,#e8a830)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.875rem', fontWeight: 600, fontSize: '0.9375rem', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                {loading && <span className="loading-spinner" />}
+                {loading ? 'Signing In...' : 'Access Admin Dashboard'}
+              </button>
+            </form>
+
+            <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#fffbeb', borderRadius: '0.5rem', border: '1px solid #fde68a' }}>
+              <p style={{ fontSize: '0.8125rem', color: '#92400e', marginBottom: '0.375rem', fontWeight: 600 }}>Demo credentials:</p>
+              <p style={{ fontSize: '0.8125rem', color: '#92400e', fontFamily: 'monospace' }}>funding_admin / admin2026</p>
             </div>
-            
-            <div className="flex justify-between items-center text-sm">
-              <Link 
-                to="/admin/register" 
-                className="font-medium hover:underline transition-colors"
-                style={{color: '#e67e22'}}
-                onMouseEnter={(e) => e.target.style.color = '#d35400'}
-                onMouseLeave={(e) => e.target.style.color = '#e67e22'}
-              >
-                Register as Admin
-              </Link>
-              <Link 
-                to="/" 
-                className="hover:underline transition-colors"
-                style={{color: '#64748b'}}
-                onMouseEnter={(e) => e.target.style.color = '#475569'}
-                onMouseLeave={(e) => e.target.style.color = '#64748b'}
-              >
-                ← Back to Home
-              </Link>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.25rem' }}>
+              <Link to="/admin/register" style={{ color: '#c8922a', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>Register as Admin</Link>
+              <Link to="/" style={{ color: '#94a3b8', fontSize: '0.875rem', textDecoration: 'none' }}>← Home</Link>
             </div>
           </div>
         </div>

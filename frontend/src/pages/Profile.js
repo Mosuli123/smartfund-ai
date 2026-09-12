@@ -3,22 +3,17 @@ import { getMatchedOpportunities, saveMatchedOpportunities } from '../services/m
 
 const Profile = ({ user }) => {
   const [profile, setProfile] = useState({
-    business_name: '',
-    cipc_registration_number: '',
-    industry: '',
-    funding_amount: '',
-    location: '',
-    years_in_operation: '',
-    business_type: '',
-    annual_turnover: '',
-    employee_count: '',
-    funding_purpose: ''
+    business_name: '', cipc_registration_number: '', industry: '',
+    funding_amount: '', location: '', years_in_operation: '',
+    business_type: '', annual_turnover: '', employee_count: '', funding_purpose: ''
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
   const industries = [
-    'Manufacturing', 'Automotive', 'Agriculture', 'ICT and Electronics', 'Renewable Energy'
+    'Agriculture', 'Agro-processing', 'Automotive', 'Construction',
+    'Green Economy', 'ICT', 'Manufacturing', 'Retail', 'Services',
+    'Technology', 'Tourism', 'Food Processing'
   ];
 
   const businessTypes = [
@@ -27,32 +22,26 @@ const Profile = ({ user }) => {
   ];
 
   const fundingPurposes = [
-    'Working Capital', 'Equipment Purchase', 'Business Expansion', 'Technology Upgrade',
-    'Marketing & Sales', 'Staff Training', 'Research & Development', 'Export Development',
-    'Inventory Purchase', 'Debt Consolidation', 'Other'
+    'Working Capital', 'Equipment Purchase', 'Business Expansion',
+    'Technology Upgrade', 'Marketing & Sales', 'Staff Training',
+    'Research & Development', 'Export Development', 'Inventory Purchase', 'Other'
   ];
 
-  const locations = [
-    'South Africa', 'Kenya', 'Nigeria', 'Ghana', 'Other'
+  const provinces = [
+    'Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal',
+    'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'
   ];
 
   useEffect(() => {
-    loadProfile();
+    const saved = localStorage.getItem('businessProfile');
+    if (saved) setProfile(JSON.parse(saved));
   }, []);
 
-  const loadProfile = () => {
-    const savedProfile = localStorage.getItem('businessProfile');
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
 
-    // Simulate API delay
     setTimeout(() => {
       const profileData = {
         ...profile,
@@ -60,256 +49,86 @@ const Profile = ({ user }) => {
         years_in_operation: parseInt(profile.years_in_operation),
         annual_turnover: parseInt(profile.annual_turnover),
         employee_count: parseInt(profile.employee_count),
-        user_id: 'demo_user'
+        user_id: user?.user_id || 'demo_user'
       };
-
       localStorage.setItem('businessProfile', JSON.stringify(profileData));
-      
-      // Automatically find and save matched opportunities
       const matches = getMatchedOpportunities(profileData);
       saveMatchedOpportunities(matches);
-      
-      setMessage(`Profile saved successfully! Found ${matches.length} matching funding opportunities.`);
+      setMessage(`Profile saved. Found ${matches.length} matching government funding programme${matches.length !== 1 ? 's' : ''}.`);
       setLoading(false);
-    }, 1000);
+    }, 800);
   };
 
-  const handleChange = (e) => {
-    setProfile({
-      ...profile,
-      [e.target.name]: e.target.value
-    });
-  };
+  const handleChange = e => setProfile({ ...profile, [e.target.name]: e.target.value });
+
+  const field = (id, label, type = 'text', extra = {}) => (
+    <div>
+      <label htmlFor={id} style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>{label}</label>
+      <input type={type} id={id} name={id} required className="modern-input" value={profile[id]} onChange={handleChange} {...extra} />
+    </div>
+  );
+
+  const select = (id, label, options, placeholder) => (
+    <div>
+      <label htmlFor={id} style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>{label}</label>
+      <select id={id} name={id} required className="modern-input" value={profile[id]} onChange={handleChange}>
+        <option value="">{placeholder}</option>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen py-8" style={{background: 'linear-gradient(135deg, #fef7f0 0%, #f0f4f8 100%)'}}>
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="modern-card p-8">
-          <div className="mb-6">
-            <h1 className="heading-1" style={{color: '#1e3a5f'}}>Business Profile</h1>
-            <div className="p-4 rounded-xl border" style={{background: 'rgba(65, 128, 190, 0.1)', borderColor: '#4180be'}}>
-              <p className="font-medium text-sm" style={{color: '#2d4a6b'}}>
-                Supported Industries: Manufacturing, Automotive, Agriculture, ICT & Electronics, Renewable Energy
-              </p>
-            </div>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '2rem 1rem' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a2240', marginBottom: '0.375rem' }}>Business Profile</h1>
+          <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>Complete your profile to receive AI-powered government funding recommendations.</p>
+        </div>
+
+        {message && (
+          <div style={{ marginBottom: '1.25rem', padding: '0.875rem 1.25rem', borderRadius: '0.5rem', background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', fontSize: '0.9375rem', fontWeight: 500 }}>
+            ✓ {message}
           </div>
-        
-          {message && (
-            <div className="mb-6 p-4 rounded-xl border" style={{
-              background: message.includes('successfully') 
-                ? 'rgba(16, 185, 129, 0.1)' 
-                : 'rgba(239, 68, 68, 0.1)',
-              borderColor: message.includes('successfully') ? '#10b981' : '#ef4444',
-              color: message.includes('successfully') ? '#065f46' : '#991b1b'
-            }}>
-              {message}
-            </div>
-          )}
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="business_name" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Business Name *
-              </label>
-              <input
-                type="text"
-                id="business_name"
-                name="business_name"
-                required
-                className="modern-input"
-                placeholder="Enter your registered business name"
-                value={profile.business_name}
-                onChange={handleChange}
-              />
+        <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', padding: '2rem' }}>
+          <form onSubmit={handleSubmit}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
+              {field('business_name', 'Business Name *', 'text', { placeholder: 'Registered business name' })}
+              {field('cipc_registration_number', 'CIPC Registration Number *', 'text', { placeholder: 'e.g. 2019/123456/07', pattern: '[0-9]{4}/[0-9]{6}/[0-9]{2}|[0-9]{10}|CK[0-9]{10}' })}
+              {select('industry', 'Industry / Sector *', industries, 'Select your sector')}
+              {select('business_type', 'Business Type *', businessTypes, 'Select business type')}
+              {select('location', 'Province *', provinces, 'Select your province')}
+              {field('years_in_operation', 'Years in Operation *', 'number', { min: 0, max: 50, placeholder: 'e.g. 3' })}
+              {field('employee_count', 'Number of Employees *', 'number', { min: 1, max: 500, placeholder: 'e.g. 12' })}
+              {field('annual_turnover', 'Annual Turnover (R) *', 'number', { min: 0, placeholder: 'e.g. 1500000' })}
+              {field('funding_amount', 'Funding Amount Required (R) *', 'number', { min: 1000, placeholder: 'e.g. 500000' })}
+            </div>
+            <div style={{ marginBottom: '1.5rem' }}>
+              {select('funding_purpose', 'Primary Funding Purpose *', fundingPurposes, 'Select funding purpose')}
             </div>
 
-            <div>
-              <label htmlFor="cipc_registration_number" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                CIPC Registration Number *
-              </label>
-              <input
-                type="text"
-                id="cipc_registration_number"
-                name="cipc_registration_number"
-                required
-                pattern="[0-9]{4}/[0-9]{6}/[0-9]{2}|[0-9]{10}|CK[0-9]{10}"
-                className="modern-input"
-                placeholder="e.g., 2019/123456/07 or CK2019123456"
-                value={profile.cipc_registration_number}
-                onChange={handleChange}
-              />
-              <p className="text-xs mt-1" style={{color: '#64748b'}}>
-                Enter your CIPC registration number (required for SMME verification)
-              </p>
-            </div>
-
-            <div>
-              <label htmlFor="industry" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Industry *
-              </label>
-              <select
-                id="industry"
-                name="industry"
-                required
-                className="modern-input"
-                value={profile.industry}
-                onChange={handleChange}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => { const s = localStorage.getItem('businessProfile'); if (s) setProfile(JSON.parse(s)); }}
+                className="btn-secondary"
               >
-                <option value="">Select your industry</option>
-                {industries.map(industry => (
-                  <option key={industry} value={industry}>{industry}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="funding_amount" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Funding Amount Required (R) *
-              </label>
-              <input
-                type="number"
-                id="funding_amount"
-                name="funding_amount"
-                required
-                min="1000"
-                className="modern-input"
-                placeholder="e.g., 50000"
-                value={profile.funding_amount}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Location *
-              </label>
-              <select
-                id="location"
-                name="location"
-                required
-                className="modern-input"
-                value={profile.location}
-                onChange={handleChange}
+                Reset
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.75rem 1.75rem', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
-                <option value="">Select your location</option>
-                {locations.map(location => (
-                  <option key={location} value={location}>{location}</option>
-                ))}
-              </select>
+                {loading && <span className="loading-spinner" />}
+                {loading ? 'Saving...' : 'Save Profile & Find Matches'}
+              </button>
             </div>
-
-            <div>
-              <label htmlFor="business_type" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Business Type *
-              </label>
-              <select
-                id="business_type"
-                name="business_type"
-                required
-                className="modern-input"
-                value={profile.business_type}
-                onChange={handleChange}
-              >
-                <option value="">Select business type</option>
-                {businessTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="years_in_operation" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Years in Operation *
-              </label>
-              <input
-                type="number"
-                id="years_in_operation"
-                name="years_in_operation"
-                required
-                min="0"
-                max="50"
-                className="modern-input"
-                placeholder="e.g., 3"
-                value={profile.years_in_operation}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="annual_turnover" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Annual Turnover (R) *
-              </label>
-              <input
-                type="number"
-                id="annual_turnover"
-                name="annual_turnover"
-                required
-                min="0"
-                className="modern-input"
-                placeholder="e.g., 500000"
-                value={profile.annual_turnover}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="employee_count" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Number of Employees *
-              </label>
-              <input
-                type="number"
-                id="employee_count"
-                name="employee_count"
-                required
-                min="1"
-                max="200"
-                className="modern-input"
-                placeholder="e.g., 5"
-                value={profile.employee_count}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label htmlFor="funding_purpose" className="block text-sm font-medium mb-2" style={{color: '#334155'}}>
-                Primary Funding Purpose *
-              </label>
-              <select
-                id="funding_purpose"
-                name="funding_purpose"
-                required
-                className="modern-input"
-                value={profile.funding_purpose}
-                onChange={handleChange}
-              >
-                <option value="">Select funding purpose</option>
-                {fundingPurposes.map(purpose => (
-                  <option key={purpose} value={purpose}>{purpose}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={loadProfile}
-              className="btn-secondary px-6 py-2"
-            >
-              Reset
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary px-6 py-2 disabled:opacity-50"
-            >
-              {loading ? 'Saving...' : 'Save Profile'}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

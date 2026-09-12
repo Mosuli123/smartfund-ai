@@ -36,8 +36,8 @@ const AdminRegister = () => {
       return;
     }
 
-    if (formData.organizationCode !== 'ELIDZ2024') {
-      setError('Invalid organization code. Contact ELIDZ administration.');
+    if (formData.organizationCode !== 'SITA2026') {
+      setError('Invalid organization code. Contact SITA GovTech administration.');
       setLoading(false);
       return;
     }
@@ -152,7 +152,7 @@ const AdminRegister = () => {
                   type="text"
                   name="organizationCode"
                   required
-                  placeholder="Contact ELIDZ for code"
+                  placeholder="Contact SITA GovTech for code"
                   className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   value={formData.organizationCode}
                   onChange={handleInputChange}

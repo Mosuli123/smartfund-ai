@@ -11,9 +11,9 @@ const SystemConfiguration = () => {
       backupFrequency: 'daily'
     },
     emailSettings: {
-      smtpServer: 'smtp.elidz.co.za',
+      smtpServer: 'smtp.sita.co.za',
       smtpPort: 587,
-      emailFrom: 'noreply@elidz.co.za',
+      emailFrom: 'noreply@govfunding.gov.za',
       enableNotifications: true,
       notificationTypes: {
         applicationSubmitted: true,

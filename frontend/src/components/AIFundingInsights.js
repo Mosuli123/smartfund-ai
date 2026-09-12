@@ -12,7 +12,7 @@ const AIFundingInsights = () => {
 
   const fetchFundingInsights = async () => {
     try {
-      const response = await fetch('http://localhost:8008/api/funding-admin/ai-insights');
+      const response = await fetch('http://localhost:8001/api/funding-admin/ai-insights');
       const data = await response.json();
       if (data.success) {
         setInsights(data.data);

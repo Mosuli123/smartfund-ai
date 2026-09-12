@@ -84,9 +84,9 @@ const ElidzAdminDashboard = ({ admin }) => {
       icon: AdminIcons.Users,
       description: 'Manage all users and permissions',
       actions: [
-        { label: 'Manage All Users', path: '/elidz-admin/user-management', color: 'from-blue-600 to-blue-700' },
-        { label: 'Approve/Decline Access', path: '/elidz-admin/approve-users', color: 'from-orange-600 to-orange-700' },
-        { label: 'Manage Funding Donors', path: '/elidz-admin/funding-admins', color: 'from-blue-500 to-orange-500' }
+        { label: 'Manage All Users', path: '/sita-admin/user-management', color: 'from-blue-600 to-blue-700' },
+        { label: 'Approve/Decline Access', path: '/sita-admin/approve-users', color: 'from-orange-600 to-orange-700' },
+        { label: 'Manage Funding Providers', path: '/sita-admin/funding-admins', color: 'from-blue-500 to-orange-500' }
       ]
     },
     {
@@ -94,9 +94,9 @@ const ElidzAdminDashboard = ({ admin }) => {
       icon: AdminIcons.Analytics,
       description: 'System insights and reporting',
       actions: [
-        { label: 'System Analytics', path: '/elidz-admin/analytics', color: 'from-orange-600 to-orange-700' },
-        { label: 'Generate Reports', path: '/elidz-admin/reports', color: 'from-blue-600 to-blue-700' },
-        { label: 'User Demographics', path: '/elidz-admin/demographics', color: 'from-orange-500 to-blue-500' }
+        { label: 'System Analytics', path: '/sita-admin/analytics', color: 'from-orange-600 to-orange-700' },
+        { label: 'Generate Reports', path: '/sita-admin/reports', color: 'from-blue-600 to-blue-700' },
+        { label: 'User Demographics', path: '/sita-admin/demographics', color: 'from-orange-500 to-blue-500' }
       ]
     },
     {
@@ -104,9 +104,9 @@ const ElidzAdminDashboard = ({ admin }) => {
       icon: AdminIcons.Settings,
       description: 'Configuration and security',
       actions: [
-        { label: 'System Configuration', path: '/elidz-admin/system-config', color: 'from-blue-600 to-orange-600' },
-        { label: 'Security Settings', path: '/elidz-admin/security', color: 'from-orange-700 to-orange-800' },
-        { label: 'Sustainability Model', path: '/elidz-admin/sustainability', color: 'from-blue-700 to-blue-800' }
+        { label: 'System Configuration', path: '/sita-admin/system-config', color: 'from-blue-600 to-orange-600' },
+        { label: 'Security Settings', path: '/sita-admin/security', color: 'from-orange-700 to-orange-800' },
+        { label: 'Sustainability Model', path: '/sita-admin/sustainability', color: 'from-blue-700 to-blue-800' }
       ]
     }
   ];
@@ -118,7 +118,7 @@ const ElidzAdminDashboard = ({ admin }) => {
         <div className={`mb-12 transform transition-all duration-1000 ${isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           <h1 className="heading-1 flex items-center gap-4 mb-6" style={{color: '#1e3a5f'}}>
             <AdminIcons.Shield className="w-12 h-12" style={{color: '#4180be'}} />
-            ELIDZ System Administration
+            SITA GovTech System Administration
           </h1>
           <div className="modern-card p-6">
             <div className="flex items-center space-x-4">
@@ -127,7 +127,7 @@ const ElidzAdminDashboard = ({ admin }) => {
               </div>
               <div>
                 <h3 className="text-xl font-bold" style={{color: '#1e3a5f'}}>{admin?.fullName || 'System Administrator'}</h3>
-                <p style={{color: '#64748b'}}>Organization: {admin?.organization || 'ELIDZ Science & Technology Park'}</p>
+                <p style={{color: '#64748b'}}>Organization: {admin?.organization || 'State Information Technology Agency (SITA)'}</p>
                 <div className="flex items-center space-x-4 mt-2 text-sm">
                   <span className="flex items-center space-x-1">
                     <div className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#10b981'}}></div>

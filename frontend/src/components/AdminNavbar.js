@@ -1,150 +1,74 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Logo from './Logo';
-import { ChartIcon, DocumentIcon, TargetIcon, UserIcon, SettingsIcon } from './Icons';
 
 const AdminNavbar = ({ admin, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
-
-  const handleLogout = () => {
-    onLogout();
-    navigate('/');
-  };
+  const isActive = (path) => location.pathname === path;
 
   const navItems = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: ChartIcon },
-    { path: '/admin/create-opportunity', label: 'Create', icon: TargetIcon },
-    { path: '/admin/manage-opportunities', label: 'Manage', icon: SettingsIcon },
-    { path: '/admin/review-applications', label: 'Review', icon: DocumentIcon },
-    { path: '/admin/reports', label: 'Reports', icon: UserIcon }
+    { path: '/admin/dashboard', label: 'Dashboard' },
+    { path: '/admin/manage-opportunities', label: 'Programmes' },
+    { path: '/admin/review-applications', label: 'Applications' },
+    { path: '/admin/create-opportunity', label: 'Add Programme' },
+    { path: '/admin/reports', label: 'Reports' },
   ];
 
+  const linkStyle = (path) => ({
+    color: isActive(path) ? '#c8922a' : 'rgba(255,255,255,0.75)',
+    background: isActive(path) ? 'rgba(200,146,42,0.15)' : 'transparent',
+    borderBottom: isActive(path) ? '2px solid #c8922a' : '2px solid transparent',
+    textDecoration: 'none',
+    fontSize: '0.875rem',
+    fontWeight: isActive(path) ? 700 : 500,
+    padding: '0.4rem 0.75rem',
+    whiteSpace: 'nowrap',
+    transition: 'all 0.15s',
+  });
+
   return (
-    <nav className="bg-white shadow-lg border-b sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo and Brand */}
-          <div className="flex items-center space-x-6">
-            <Link to="/admin/dashboard" className="flex items-center group">
-              <Logo className="h-12" />
-              <div className="ml-3 hidden sm:block">
-                <span className="font-bold text-lg text-gray-900 group-hover:text-orange-600 transition-colors">
-                  Admin Portal
-                </span>
-                <div className="text-xs text-gray-500 uppercase tracking-wide">Funding Management</div>
-              </div>
-            </Link>
-            
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex space-x-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link 
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      isActive(item.path) 
-                        ? 'bg-orange-100 text-orange-700 shadow-sm' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4 mr-2" />
-                    {item.label}
-                  </Link>
-                );
-              })}
+    <nav style={{ background: '#0a2240', borderBottom: '3px solid #c8922a', position: 'sticky', top: 0, zIndex: 100 }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '4rem' }}>
+
+          {/* Brand */}
+          <Link to="/admin/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#c8922a,#e8a830)', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: 800, fontSize: '1rem' }}>G</span>
             </div>
+            <div>
+              <div style={{ color: 'white', fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.2 }}>GovTech Funding Platform</div>
+              <div style={{ color: '#c8922a', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Funding Provider Portal</div>
+            </div>
+          </Link>
+
+          {/* Nav Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.125rem' }}>
+            {navItems.map(({ path, label }) => (
+              <Link key={path} to={path} style={linkStyle(path)}>{label}</Link>
+            ))}
           </div>
-          
-          {/* User Info and Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <div className="relative">
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <div className="w-6 h-6 relative">
-                  <div className="absolute inset-0 bg-gray-200 rounded-full"></div>
-                  <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></div>
-                </div>
-              </button>
-            </div>
-            
-            {/* User Profile */}
-            <div className="hidden md:flex items-center space-x-3">
-              <div className="text-right">
-                <div className="text-sm font-medium text-gray-900">
-                  {admin?.companyName || 'Admin User'}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {admin?.industry || 'System Administrator'}
-                </div>
+
+          {/* User + Logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ color: 'white', fontSize: '0.8125rem', fontWeight: 600 }}>
+                {admin?.companyName || admin?.username || 'Admin'}
               </div>
-              <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">
-                  {(admin?.companyName || admin?.username || 'A').charAt(0).toUpperCase()}
-                </span>
+              <div style={{ color: '#c8922a', fontSize: '0.6875rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Funding Provider
               </div>
             </div>
-            
-            {/* Logout Button */}
             <button
-              onClick={handleLogout}
-              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+              onClick={() => { onLogout(); navigate('/'); }}
+              style={{ background: '#c0392b', color: 'white', border: 'none', padding: '0.375rem 0.875rem', borderRadius: '0.375rem', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer' }}
             >
               Logout
             </button>
-            
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-gray-600 hover:text-gray-900"
-            >
-              <div className="w-6 h-6">
-                <div className={`w-full h-0.5 bg-current transition-all ${
-                  isMenuOpen ? 'rotate-45 translate-y-2' : 'mb-1'
-                }`}></div>
-                <div className={`w-full h-0.5 bg-current transition-all ${
-                  isMenuOpen ? 'opacity-0' : 'mb-1'
-                }`}></div>
-                <div className={`w-full h-0.5 bg-current transition-all ${
-                  isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                }`}></div>
-              </div>
-            </button>
           </div>
+
         </div>
-        
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 py-4">
-            <div className="space-y-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link 
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                      isActive(item.path) 
-                        ? 'bg-orange-100 text-orange-700' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5 mr-3" />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   );

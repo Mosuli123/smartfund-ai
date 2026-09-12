@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fundingOpportunities, calculateMatch } from '../data/mockData';
 import { getStoredMatches, getMatchedOpportunities, saveMatchedOpportunities } from '../services/matchingService';
 
 const FundingOpportunities = ({ user }) => {
@@ -8,197 +7,168 @@ const FundingOpportunities = ({ user }) => {
   const [profile, setProfile] = useState(null);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
-    loadProfile();
-    loadStoredMatches();
+    const p = localStorage.getItem('businessProfile');
+    if (p) setProfile(JSON.parse(p));
+    const stored = getStoredMatches();
+    if (stored.length > 0) setMatches(stored);
   }, []);
 
-  const loadStoredMatches = () => {
-    const storedMatches = getStoredMatches();
-    if (storedMatches.length > 0) {
-      setMatches(storedMatches);
-    }
-  };
-
-  const loadProfile = () => {
-    const savedProfile = localStorage.getItem('businessProfile');
-    if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
-    } else {
-      setError('Please complete your business profile first.');
-    }
-  };
-
   const findMatches = () => {
-    if (!profile) {
-      setError('Please complete your business profile first.');
-      return;
-    }
-
+    if (!profile) return;
     setLoading(true);
-    setError('');
-
-    // Simulate API delay
     setTimeout(() => {
-      const matchedOpportunities = getMatchedOpportunities(profile);
-      saveMatchedOpportunities(matchedOpportunities);
-      setMatches(matchedOpportunities);
+      const m = getMatchedOpportunities(profile);
+      saveMatchedOpportunities(m);
+      setMatches(m);
       setLoading(false);
-    }, 1500);
+    }, 1200);
   };
 
-  const getScoreColor = (score) => {
-    if (score >= 80) return 'text-green-600 bg-green-100';
-    if (score >= 60) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
-  };
+  const scoreColor = s => s >= 80 ? '#166534' : s >= 60 ? '#92400e' : '#991b1b';
+  const scoreBg = s => s >= 80 ? '#f0fdf4' : s >= 60 ? '#fffbeb' : '#fef2f2';
+  const scoreBorder = s => s >= 80 ? '#bbf7d0' : s >= 60 ? '#fde68a' : '#fecaca';
 
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'Grant': return 'bg-green-100 text-green-800';
-      case 'Loan': return 'bg-blue-100 text-blue-800';
-      case 'Equity': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const typeColors = { Grant: ['#dcfce7', '#166534'], Loan: ['#dbeafe', '#1e40af'], Equity: ['#f3e8ff', '#6b21a8'], Subsidy: ['#fef9c3', '#854d0e'] };
 
   return (
-    <div className="min-h-screen py-8" style={{background: 'linear-gradient(135deg, #fef7f0 0%, #f0f4f8 100%)'}}>
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="heading-1" style={{color: '#1e3a5f'}}>Funding Opportunities</h1>
-        
+    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif', padding: '2rem 1rem' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a2240', marginBottom: '0.375rem' }}>AI Funding Matches</h1>
+          <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>Government funding programmes matched to your business profile with explainable AI scoring.</p>
+        </div>
+
         {profile ? (
-          <div className="modern-card p-4 mb-6">
-            <h3 className="font-semibold mb-2" style={{color: '#1e3a5f'}}>Your Profile Summary:</h3>
-            <p className="text-sm" style={{color: '#64748b'}}>
-              <strong>{profile.business_name}</strong> (CIPC: {profile.cipc_registration_number}) | {profile.industry} | 
-              R{profile.funding_amount?.toLocaleString()} | {profile.location} | 
-              {profile.years_in_operation} years | {profile.employee_count} employees
-            </p>
-            {matches.length > 0 && (
-              <div className="mt-2 text-sm font-medium" style={{color: '#10b981'}}>
-                ✓ {matches.length} pre-filtered opportunities found based on your profile
-              </div>
-            )}
+          <div style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', padding: '1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div>
+              <span style={{ fontWeight: 600, color: '#0a2240' }}>{profile.business_name}</span>
+              <span style={{ color: '#94a3b8', margin: '0 0.5rem' }}>|</span>
+              <span style={{ color: '#64748b', fontSize: '0.875rem' }}>{profile.industry} · {profile.location} · R{parseInt(profile.funding_amount || 0).toLocaleString()} required</span>
+            </div>
+            <button
+              onClick={findMatches}
+              disabled={loading}
+              style={{ background: 'linear-gradient(135deg,#1a4f8a,#2d6cc0)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.625rem 1.25rem', fontWeight: 600, fontSize: '0.875rem', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              {loading && <span className="loading-spinner" />}
+              {loading ? 'Matching...' : 'Refresh Matches'}
+            </button>
           </div>
         ) : (
-          <div className="p-4 rounded-xl mb-6 border" style={{background: 'rgba(231, 126, 34, 0.1)', borderColor: '#e67e22'}}>
-            <p style={{color: '#b8470f'}}>
-              Complete your business profile to get personalized funding matches.
-            </p>
+          <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '1.25rem', color: '#92400e', fontSize: '0.9375rem' }}>
+            ⚠ Complete your <a href="/profile" style={{ color: '#1a4f8a', fontWeight: 600 }}>business profile</a> first to receive personalised funding matches.
           </div>
         )}
 
-        <div className="flex space-x-4">
-          <button
-            onClick={findMatches}
-            disabled={loading || !profile}
-            className="btn-primary px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <div className="flex items-center">
-                <div className="loading-spinner mr-2"></div>
-                Refreshing Matches...
-              </div>
-            ) : (
-              'Refresh Matches'
-            )}
-          </button>
-          
-          {matches.length > 0 && (
-            <div className="flex items-center font-medium" style={{color: '#10b981'}}>
-              ✓ {matches.length} opportunities automatically filtered for you
-            </div>
-          )}
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
-
-      {matches.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="heading-2" style={{color: '#1e3a5f'}}>
-              {matches.length} Best Funding Matches
-            </h2>
-            <div className="text-sm" style={{color: '#64748b'}}>
-              Automatically filtered based on your profile
-            </div>
+        {matches.length > 0 && (
+          <div style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontWeight: 600, color: '#0a2240' }}>{matches.length} funding programme{matches.length !== 1 ? 's' : ''} matched</span>
+            <span style={{ fontSize: '0.8125rem', color: '#94a3b8' }}>Sorted by match score · Prototype demonstration data</span>
           </div>
-          
-          <div className="space-y-6">
-            {matches.map((match) => (
-              <div key={match.id} className="modern-card p-6 border-l-4" style={{borderColor: '#4180be'}}>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2" style={{color: '#1e3a5f'}}>
-                      {match.name}
-                    </h3>
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(match.type)}`}>
-                        {match.type}
-                      </span>
-                      <span className="text-sm" style={{color: '#64748b'}}>
-                        R{match.min_amount?.toLocaleString()} - R{match.max_amount?.toLocaleString()}
-                      </span>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {matches.map(m => {
+            const [tbg, tc] = typeColors[m.type] || ['#f1f5f9', '#475569'];
+            const isOpen = expanded === m.id;
+            return (
+              <div key={m.id} style={{ background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+                {/* Card header */}
+                <div style={{ padding: '1.5rem', borderLeft: `4px solid ${scoreColor(m.match_score)}` }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                        <span style={{ background: tbg, color: tc, padding: '0.2rem 0.625rem', borderRadius: 9999, fontSize: '0.75rem', fontWeight: 600 }}>{m.type}</span>
+                        <span style={{ color: '#94a3b8', fontSize: '0.8125rem' }}>{m.funding_company}</span>
+                      </div>
+                      <h3 style={{ fontSize: '1.0625rem', fontWeight: 700, color: '#0a2240', marginBottom: '0.375rem' }}>{m.name}</h3>
+                      <p style={{ color: '#64748b', fontSize: '0.875rem', lineHeight: 1.5 }}>{m.description}</p>
+                      <div style={{ marginTop: '0.625rem', fontSize: '0.8125rem', color: '#475569' }}>
+                        <strong>Range:</strong> R{m.min_amount?.toLocaleString()} – R{m.max_amount?.toLocaleString()}
+                        &nbsp;·&nbsp; <strong>Deadline:</strong> {m.application_deadline || 'Open'}
+                      </div>
+                    </div>
+                    {/* Score badge */}
+                    <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                      <div style={{ background: scoreBg(m.match_score), border: `2px solid ${scoreBorder(m.match_score)}`, borderRadius: '0.75rem', padding: '0.75rem 1.25rem' }}>
+                        <div style={{ fontSize: '1.75rem', fontWeight: 800, color: scoreColor(m.match_score), lineHeight: 1 }}>{m.match_score}%</div>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 600, color: scoreColor(m.match_score), marginTop: '0.25rem' }}>MATCH</div>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className={`px-3 py-2 rounded-lg font-bold text-lg ${getScoreColor(match.match_score)}`}>
-                    {match.match_score}% Match
+
+                  {/* Primary reason */}
+                  <div style={{ marginTop: '1rem', background: '#f8fafc', borderRadius: '0.5rem', padding: '0.875rem', fontSize: '0.875rem' }}>
+                    <span style={{ fontWeight: 600, color: '#0a2240' }}>Why this match? </span>
+                    <span style={{ color: '#475569' }}>{m.primaryReason}</span>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => setExpanded(isOpen ? null : m.id)}
+                      style={{ background: 'white', color: '#1a4f8a', border: '1.5px solid #1a4f8a', borderRadius: '0.5rem', padding: '0.5rem 1rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}
+                    >
+                      {isOpen ? 'Hide Details ▲' : 'View Eligibility Details ▼'}
+                    </button>
+                    <button
+                      onClick={() => { localStorage.setItem('selectedOpportunity', JSON.stringify(m)); navigate('/applications'); }}
+                      style={{ background: 'linear-gradient(135deg,#1a7a4a,#22a05a)', color: 'white', border: 'none', borderRadius: '0.5rem', padding: '0.5rem 1.25rem', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer' }}
+                    >
+                      Apply Now →
+                    </button>
                   </div>
                 </div>
 
-                <p className="mb-4" style={{color: '#475569'}}>{match.description}</p>
+                {/* Expanded eligibility breakdown */}
+                {isOpen && (
+                  <div style={{ borderTop: '1px solid #e2e8f0', padding: '1.5rem', background: '#fafafa' }}>
+                    <h4 style={{ fontWeight: 700, color: '#0a2240', marginBottom: '1rem', fontSize: '0.9375rem' }}>Eligibility Assessment</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                      {(m.criteriaMatches || []).map(c => (
+                        <div key={c.criteria} style={{ background: 'white', borderRadius: '0.5rem', border: `1px solid ${c.met ? '#bbf7d0' : '#fecaca'}`, padding: '0.875rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
+                            <span style={{ fontSize: '1rem' }}>{c.met ? '✅' : '⚠️'}</span>
+                            <span style={{ fontWeight: 600, color: '#0a2240', fontSize: '0.875rem' }}>{c.criteria}</span>
+                          </div>
+                          <div style={{ fontSize: '0.8125rem', color: '#64748b' }}>{c.detail}</div>
+                        </div>
+                      ))}
+                    </div>
 
-                <div className="p-4 rounded-xl mb-4" style={{background: 'rgba(248, 250, 252, 0.8)'}}>
-                  <h4 className="font-semibold mb-2" style={{color: '#1e3a5f'}}>Why This Matches:</h4>
-                  <p className="text-sm" style={{color: '#475569'}}>{match.explanation}</p>
-                  
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <h5 className="font-medium mb-1" style={{color: '#1e3a5f'}}>Funding Provider:</h5>
-                    <p className="text-sm" style={{color: '#475569'}}>
-                      <strong>{match.funding_company}</strong> ({match.funding_industry})
-                    </p>
-                    <p className="text-xs" style={{color: '#64748b'}}>Contact: {match.contact_email}</p>
+                    {m.gaps && m.gaps.length > 0 && (
+                      <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem' }}>
+                        <div style={{ fontWeight: 600, color: '#92400e', marginBottom: '0.5rem', fontSize: '0.875rem' }}>Potential gaps to address:</div>
+                        {m.gaps.map((g, i) => <div key={i} style={{ fontSize: '0.8125rem', color: '#92400e' }}>• {g}</div>)}
+                      </div>
+                    )}
+
+                    <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.5rem', padding: '1rem' }}>
+                      <span style={{ fontWeight: 600, color: '#1e40af', fontSize: '0.875rem' }}>Recommended next action: </span>
+                      <span style={{ color: '#1e40af', fontSize: '0.875rem' }}>{m.nextAction}</span>
+                    </div>
+
+                    <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: '#94a3b8' }}>
+                      AI-assisted recommendation. Final eligibility determined by {m.funding_company}. Contact: {m.contact_email}
+                    </div>
                   </div>
-                </div>
-
-                <div className="flex justify-end space-x-3">
-                  <button className="btn-secondary px-4 py-2">
-                    Learn More
-                  </button>
-                  <button 
-                    onClick={() => {
-                      localStorage.setItem('selectedOpportunity', JSON.stringify(match));
-                      navigate('/application-review');
-                    }}
-                    className="px-4 py-2 text-white rounded-lg font-medium transition-all" style={{background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'}}
-                  >
-                    Apply Now
-                  </button>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
 
-      {matches.length === 0 && !loading && !error && profile && (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-semibold mb-2" style={{color: '#1e3a5f'}}>No Matches Found</h3>
-          <p style={{color: '#64748b'}}>Update your profile or click "Refresh Matches" to find new opportunities.</p>
-        </div>
-      )}
-    </div>
+        {matches.length === 0 && !loading && profile && (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+            <h3 style={{ fontWeight: 700, color: '#0a2240', marginBottom: '0.5rem' }}>No matches found</h3>
+            <p style={{ color: '#64748b' }}>Update your profile or click Refresh Matches to search again.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
